@@ -1,0 +1,560 @@
+[
+  {
+    "id": "builtin_rachel_350z",
+    "name": "Rachel's 350Z",
+    "category": "Rivals & NPCs",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 43 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_nikki_mustang",
+    "name": "Nikki's Mustang",
+    "category": "Rivals & NPCs",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 47 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_trish_skyline",
+    "name": "Trish's Skyline R34",
+    "category": "Rivals & NPCs",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 4E 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_nigel_3000gt",
+    "name": "Nigel's 3000GT",
+    "category": "Rivals & NPCs",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 50 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_snoop_escalade",
+    "name": "Snoop Dogg's Escalade",
+    "category": "Rivals & NPCs",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 57 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_gto_finalboss",
+    "name": "GTO Final Boss",
+    "category": "Rivals & NPCs",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 5A 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_supra",
+    "name": "Toyota Supra (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 3A 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_rx7",
+    "name": "Mazda RX-7 (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 3B 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_skyline_r34",
+    "name": "Nissan Skyline R34 (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 3C 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_350z",
+    "name": "Nissan 350Z (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 3D 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_civic",
+    "name": "Honda Civic (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 E4 31 36 43 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_240sx",
+    "name": "Nissan 240SX (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 3E 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_eclipse",
+    "name": "Mitsubishi Eclipse (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 3F 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_impreza",
+    "name": "Subaru Impreza WRX (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 40 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_lancer",
+    "name": "Mitsubishi Lancer Evo (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 41 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_tiburon",
+    "name": "Hyundai Tiburon (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 42 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_golf_gti",
+    "name": "VW Golf GTI (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 43 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_punto",
+    "name": "Fiat Punto (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 44 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_peugeot_206",
+    "name": "Peugeot 206 (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 45 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_corolla",
+    "name": "Toyota Corolla (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 46 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_mustang",
+    "name": "Ford Mustang (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 48 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_gto",
+    "name": "Pontiac GTO (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 49 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_s2000",
+    "name": "Honda S2000 (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 4A 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_celica",
+    "name": "Toyota Celica (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 4B 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_integra",
+    "name": "Acura Integra (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 4C 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_rx8",
+    "name": "Mazda RX-8 (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 4D 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_silvia",
+    "name": "Nissan Silvia S15 (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 4F 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_is300",
+    "name": "Lexus IS300 (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 51 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_audi_tt",
+    "name": "Audi TT (Maxed)",
+    "category": "Playable Cars",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 52 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_350z_sponsor",
+    "name": "Sponsor 350Z (Stage Clear)",
+    "category": "Special / Sponsor",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 53 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  },
+  {
+    "id": "builtin_skyline_sponsor",
+    "name": "Sponsor Skyline (Stage Clear)",
+    "category": "Special / Sponsor",
+    "data": [
+      { "off": 23276, "hex": "01 00 00 00 54 36 31 45 00 00 00 00 00 00 00 00" },
+      { "off": 23292, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23308, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23324, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23340, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23356, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23372, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23388, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23404, "hex": "FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF FF" },
+      { "off": 23420, "hex": "64 00 00 00 64 00 00 00 64 00 00 00 64 00 00 00" },
+      { "off": 23436, "hex": "64 00 00 00 64 00 00 00 01 00 00 00 00 00 00 00" }
+    ]
+  }
+]
