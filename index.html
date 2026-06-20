@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Piererra Tools</title>
+  <link rel="stylesheet" href="css/portal.css" />
+</head>
+<body>
+
+  <!-- ========================================================
+       SCANLINE OVERLAY — cyberpunk CRT effect (CSS-driven)
+  ======================================================== -->
+  <div class="pt-scanlines" aria-hidden="true"></div>
+
+  <!-- ========================================================
+       HEADER
+  ======================================================== -->
+  <header class="pt-header">
+    <div class="pt-header__glitch-wrap">
+      <h1 class="pt-header__title" data-text="PIERERRA TOOLS">PIERERRA TOOLS</h1>
+      <p class="pt-header__sub">// a personal toolbox</p>
+    </div>
+    <div class="pt-header__stripe" aria-hidden="true"></div>
+  </header>
+
+  <!-- ========================================================
+       MAIN — tool card grid
+  ======================================================== -->
+  <main class="pt-main">
+
+    <p class="pt-main__label">// SELECT TOOL</p>
+
+    <div class="pt-grid">
+
+      <!-- TOOL 01 — NFSU2 Save Data Editor (ACTIVE) -->
+      <a href="nfsu2-editor.html" class="pt-card pt-card--active">
+        <span class="pt-card__id">01</span>
+        <div class="pt-card__body">
+          <span class="pt-card__tag">GAME TOOL</span>
+          <h2 class="pt-card__name">NFSU2 Save Data Editor</h2>
+          <p class="pt-card__desc">
+            Edit Need for Speed Underground 2 save files. Inject cars, unlock parts,
+            patch money, clone profiles, create new saves and more.
+          </p>
+        </div>
+        <span class="pt-card__arrow">→</span>
+      </a>
+
+      <!-- TOOL 02 — placeholder -->
+      <div class="pt-card pt-card--locked">
+        <span class="pt-card__id">02</span>
+        <div class="pt-card__body">
+          <span class="pt-card__tag">COMING SOON</span>
+          <h2 class="pt-card__name">???</h2>
+          <p class="pt-card__desc">Next tool in development.</p>
+        </div>
+        <span class="pt-card__lock" aria-hidden="true">▪▪▪</span>
+      </div>
+
+      <!-- TOOL 03 — placeholder -->
+      <div class="pt-card pt-card--locked">
+        <span class="pt-card__id">03</span>
+        <div class="pt-card__body">
+          <span class="pt-card__tag">COMING SOON</span>
+          <h2 class="pt-card__name">???</h2>
+          <p class="pt-card__desc">Next tool in development.</p>
+        </div>
+        <span class="pt-card__lock" aria-hidden="true">▪▪▪</span>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ========================================================
+       FOOTER
+  ======================================================== -->
+  <footer class="pt-footer">
+    <span class="pt-footer__text">PIERERRA TOOLS &nbsp;·&nbsp; built by Piererra</span>
+  </footer>
+
+</body>
+</html>
