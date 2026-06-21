@@ -281,27 +281,43 @@
   /* ----------------------------------------------------------
      CAR INJECTION & PATCH
      Patch format: [{off: number, hex: string}, ...]
-     'off' is absolute offset in the save file.
+     'off' is relative to the START OF THE SLOT it's applied to
+     (0 .. OFF.SLOT_SIZE-1) — NOT an absolute file offset. This is what
+     lets the same car patch be injected into any of the 5 slots: the
+     actual write address is computed as slotBase + off at injection
+     time. (A previous version treated 'off' as an absolute file offset,
+     which meant every patch always landed on whichever slot it was
+     hardcoded for — usually Slot 1 — regardless of which slot the user
+     selected, silently overwriting the wrong car.)
   ---------------------------------------------------------- */
 
-  /** Inject a car patch array into a slot. Each entry overwrites bytes at 'off'. */
+  /** Inject a car patch array into a slot. Each entry overwrites bytes
+   *  at (slot start + entry.off). */
   function _injectCar(slotIdx, carData) {
     // First unlock the slot so the car shows up
     _unlockSlot(slotIdx);
 
+    const slotBase = _slotOffset(slotIdx);
+
     for (const entry of carData) {
-      const off   = typeof entry.off === 'string'
+      const relOff = typeof entry.off === 'string'
         ? parseInt(entry.off, 16)
         : entry.off;
       const bytes = _hexToBytes(entry.hex);
 
-      // Bounds check
+      // Bounds check: must land fully within this slot, not bleed into
+      // a neighboring slot or unrelated save data.
+      if (relOff < 0 || relOff + bytes.length > OFF.SLOT_SIZE) continue;
+
+      const off = slotBase + relOff;
       if (off + bytes.length > _buf.byteLength) continue;
       _writeBytes(off, bytes);
     }
   }
 
-  /** Extract car data from a slot as a patch array */
+  /** Extract car data from a slot as a patch array (offsets relative
+   *  to the slot's own start, so the result can be re-injected into
+   *  any slot). */
   function _extractCar(slotIdx) {
     const base    = _slotOffset(slotIdx);
     const size    = OFF.SLOT_SIZE;
@@ -314,7 +330,7 @@
       const chunk = bytes.slice(i, i + CHUNK);
       if (chunk.every(b => b === 0x00)) continue;
       patches.push({
-        off: base + i,
+        off: i,
         hex: _bytesToHex(chunk),
       });
     }
