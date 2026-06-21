@@ -3,8 +3,8 @@
    Car registry: loads, merges, and exposes all car data
 
    Responsibilities:
-     - Parse ptSDE-builtin-cars.json  (rival/NPC cars from game)
-     - Parse ptSDE-community-cars.json (community patch cars)
+     - Read window.ptSDE_BUILTIN_CARS   (rival/NPC + verified cars, set by ptSDE-builtin-cars.js)
+     - Read window.ptSDE_COMMUNITY_CARS (community patch cars, set by ptSDE-community-cars.js)
      - Merge into window.ptSDE_CARS — single flat array
      - Expose window.ptSDE_CAR_MAP   — id → car lookup object
 
@@ -17,10 +17,10 @@
      }
 
    Load order in nfsu2-editor.html:
-     1. ptSDE-template.js     (blank save)
-     2. ptSDE-builtin-cars.json  loaded as text by this file
-     3. ptSDE-community-cars.json loaded as text by this file
-     4. ptSDE-cars.js         ← THIS FILE
+     1. ptSDE-template.js        (blank save)
+     2. ptSDE-builtin-cars.js    sets window.ptSDE_BUILTIN_CARS
+     3. ptSDE-community-cars.js  sets window.ptSDE_COMMUNITY_CARS
+     4. ptSDE-cars.js            ← THIS FILE
      5. ptSDE-core.js
      6. ptSDE-ui.js
 ============================================================ */
@@ -29,23 +29,20 @@
   'use strict';
 
   /* ----------------------------------------------------------
-     FETCH & PARSE JSON data files at runtime
-     Both JSON files are in /data/ relative to the HTML page.
-     We use synchronous XHR so the data is ready before
-     ptSDE-ui.js tries to populate the dropdown.
+     READ embedded data
+     Car data now ships as plain JavaScript (window.ptSDE_BUILTIN_CARS /
+     window.ptSDE_COMMUNITY_CARS), set directly by ptSDE-builtin-cars.js
+     and ptSDE-community-cars.js — no network fetch involved. (A
+     previous version used synchronous XHR to load separate .json
+     files; that approach proved unreliable on some mobile browsers
+     once the car dataset grew past a few KB, so it's been dropped in
+     favor of embedding the data the same way ptSDE-template.js does.)
   ---------------------------------------------------------- */
 
-  function loadJSON(path) {
-    try {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', path, false);   // synchronous
-      xhr.send(null);
-      if (xhr.status === 200 || xhr.status === 0) {
-        return JSON.parse(xhr.responseText);
-      }
-    } catch (e) {
-      console.warn('[ptSDE-cars] Could not load ' + path + ':', e.message);
-    }
+  function readEmbedded(globalVarName) {
+    const arr = global[globalVarName];
+    if (Array.isArray(arr)) return arr;
+    console.warn('[ptSDE-cars] ' + globalVarName + ' was not found or not an array — is the corresponding <script> tag included before ptSDE-cars.js?');
     return [];
   }
 
@@ -53,8 +50,8 @@
      LOAD BOTH SOURCES
   ---------------------------------------------------------- */
 
-  const builtinRaw   = loadJSON('data/ptSDE-builtin-cars.json');
-  const communityRaw = loadJSON('data/ptSDE-community-cars.json');
+  const builtinRaw   = readEmbedded('ptSDE_BUILTIN_CARS');
+  const communityRaw = readEmbedded('ptSDE_COMMUNITY_CARS');
 
   /* ----------------------------------------------------------
      NORMALISE — ensure every entry has an id, name, category
