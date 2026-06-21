@@ -39,7 +39,7 @@
   const OFF = {
     // File header magic (4 bytes): EA FC 09 11
     HEADER:        0x0000,
-    HEADER_MAGIC:  [0xEA, 0xFC, 0x09, 0x11],
+    HEADER_MAGIC:  [0x32, 0x30, 0x43, 0x4D], // ASCII "20CM"
 
     // Money: signed 32-bit little-endian
     MONEY:         0xA16A,
@@ -288,9 +288,12 @@
   ---------------------------------------------------------- */
 
   function _validateHeader() {
-    if (!_buf || _buf.byteLength < 4) return false;
+    if (!_buf || _buf.byteLength < 6) return false;
     const view = new Uint8Array(_buf);
-    return OFF.HEADER_MAGIC.every((b, i) => view[OFF.HEADER + i] === b);
+    const magicOk = OFF.HEADER_MAGIC.every((b, i) => view[OFF.HEADER + i] === b);
+    if (!magicOk) return false;
+    const low16 = _dv().getUint16(0x0004, true);
+    return low16 === (_buf.byteLength & 0xFFFF);
   }
 
   /* ----------------------------------------------------------
