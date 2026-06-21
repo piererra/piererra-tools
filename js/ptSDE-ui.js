@@ -106,8 +106,19 @@
 
       grid.appendChild(card);
     }
+  }
 
-    // Wire slot action buttons via delegation on the grid
+  /**
+   * Wire slot action buttons via delegation on the grid.
+   * Called ONCE on init (not inside renderSlotCards), so the listener
+   * doesn't get re-attached — and stack up — every time the grid
+   * re-renders (which previously caused click handlers to fire
+   * multiple times after repeated actions).
+   */
+  function initSlotGrid() {
+    const grid = $('sde-slots-grid');
+    if (!grid) return;
+
     grid.addEventListener('click', (e) => {
       const btn    = e.target.closest('[data-slot-action]');
       if (!btn) return;
@@ -218,7 +229,15 @@
     const dropzone  = $('sde-dropzone');
 
     // Click to browse
-    dropzone.addEventListener('click', () => fileInput.click());
+    // The file input is stretched invisibly over the whole dropzone, so most
+    // clicks already land directly on it and the browser opens the picker
+    // natively. Only force-open it here if the click landed on something
+    // else inside the dropzone (e.g. during keyboard/programmatic focus) —
+    // otherwise this fires a second, redundant picker open per click.
+    dropzone.addEventListener('click', (e) => {
+      if (e.target === fileInput) return;
+      fileInput.click();
+    });
     dropzone.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') fileInput.click();
     });
@@ -466,6 +485,7 @@
     $ = (id) => document.getElementById(id);
 
     initLoadSection();
+    initSlotGrid();
     initBasicEdits();
     populateCarDropdown();
     initCarInjection();
@@ -476,3 +496,4 @@
   });
 
 }());
+   
