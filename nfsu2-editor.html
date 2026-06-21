@@ -371,14 +371,16 @@
 
   <!-- ========================================================
        SCRIPTS — order matters
-       1. template  (blank save data)
-       2. cars      (car database + patch logic)
-       3. core      (binary read/write engine)
-       4. ui        (DOM interactions)
+       1. template       (blank save data)
+       2. builtin cars   (embedded car patch data)
+       3. community cars (embedded car patch data)
+       4. cars           (car database + patch logic)
+       5. core           (binary read/write engine)
+       6. ui             (DOM interactions)
   ======================================================== -->
   <script src="js/ptSDE-template.js"></script>
-  <script src="data/ptSDE-builtin-cars.json" type="application/json" id="ptSDE-builtin-data"></script>
-  <script src="data/ptSDE-community-cars.json" type="application/json" id="ptSDE-community-data"></script>
+  <script src="data/ptSDE-builtin-cars.js"></script>
+  <script src="data/ptSDE-community-cars.js"></script>
   <script src="js/ptSDE-cars.js"></script>
   <script src="js/ptSDE-core.js"></script>
   <script src="js/ptSDE-ui.js"></script>
