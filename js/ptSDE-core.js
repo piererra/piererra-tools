@@ -44,10 +44,14 @@
     // Money: signed 32-bit little-endian
     MONEY:         0xA16A,
 
-    // Profile name: up to 8 bytes, null-terminated, ASCII
-    // We scan for the name dynamically (more reliable than fixed offset)
-    NAME_SCAN_START: 0xD000,
-    NAME_SCAN_END:   0xD500,
+    // Profile name: ASCII, null-terminated, at a fixed offset.
+    // Verified against multiple real save files — this offset is reliable.
+    // NAME_READ_LEN is intentionally longer than the game's 7-char limit so
+    // names written by external tools/exploits (which can exceed 7 chars)
+    // still display correctly. Writing is always capped at 7 characters
+    // (the game's real limit) inside _writeName, regardless of read length.
+    NAME_OFFSET:    0xD225,
+    NAME_READ_LEN:  16,
 
     // Car slots: 5 slots, each 0x7F2 bytes, starting at 0x5AEC
     SLOT_BASE:     0x5AEC,
@@ -137,55 +141,28 @@
   }
 
   /* ----------------------------------------------------------
-     NAME — scan-based detection
-     The profile name is stored as a null-terminated ASCII string.
-     We scan a known region to find it dynamically.
+     NAME — fixed-offset read/write
+     The profile name is stored as a null-terminated ASCII string at a
+     fixed offset. (A previous version of this tool scanned for the name
+     dynamically, but testing against real save files showed that scan
+     producing wrong results on every file tested — it kept finding false
+     matches before reaching the real name. The fixed offset below was
+     correct in every file tested, so it's now used directly.)
   ---------------------------------------------------------- */
 
   /**
-   * Find the profile name offset by scanning for a readable ASCII
-   * string (printable chars) followed by null bytes in the scan range.
-   * Falls back to fixed offset 0xD225 if scan fails.
+   * Read profile name as string.
+   * Reads up to NAME_READ_LEN bytes, stopping at the first null. This is
+   * intentionally longer than the game's normal 7-character limit so that
+   * names written by external tools/exploits (which can exceed 7 chars)
+   * still display correctly here — this only affects reading/display,
+   * not what this tool itself can write.
    */
-  function _findNameOffset() {
-    const view = new Uint8Array(_buf);
-    const start = OFF.NAME_SCAN_START;
-    const end   = Math.min(OFF.NAME_SCAN_END, view.length);
-
-    for (let i = start; i < end - 8; i++) {
-      // Check if bytes at i look like a 1–7 char alphanumeric name
-      let len = 0;
-      while (len < 7 && i + len < end) {
-        const c = view[i + len];
-        if (c === 0x00) break;
-        // Printable ASCII: space(0x20) through ~(0x7E), but we want alphanumeric
-        if (!((c >= 0x30 && c <= 0x39) ||  // 0-9
-              (c >= 0x41 && c <= 0x5A) ||  // A-Z
-              (c >= 0x61 && c <= 0x7A))) {  // a-z
-          len = 0;
-          break;
-        }
-        len++;
-      }
-      // Valid name: 1-7 chars followed by a null
-      if (len >= 1 && len <= 7 && view[i + len] === 0x00) {
-        // Extra sanity: at least 7 more nulls after (name field is 8 bytes padded)
-        if (i + 8 <= end) {
-          return i;
-        }
-      }
-    }
-
-    // Fallback to known fixed offset
-    return 0xD225;
-  }
-
-  /** Read profile name as string */
   function _readName() {
-    const off  = _findNameOffset();
+    const off  = OFF.NAME_OFFSET;
     const view = new Uint8Array(_buf);
     let name   = '';
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < OFF.NAME_READ_LEN; i++) {
       const c = view[off + i];
       if (c === 0x00) break;
       name += String.fromCharCode(c);
@@ -193,12 +170,17 @@
     return name || '?';
   }
 
-  /** Write profile name (max 7 chars, null-padded to 8 bytes) */
+  /**
+   * Write profile name — always capped at 7 characters (the game's real
+   * limit), regardless of how long the previous/displayed name was.
+   * Clears the full NAME_READ_LEN region first so no leftover characters
+   * from a longer existing name remain after the new null terminator.
+   */
   function _writeName(name) {
-    const off   = _findNameOffset();
+    const off   = OFF.NAME_OFFSET;
     const clean = name.slice(0, 7).replace(/[^A-Za-z0-9]/g, '');
     const view  = new Uint8Array(_buf);
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < OFF.NAME_READ_LEN; i++) {
       view[off + i] = i < clean.length ? clean.charCodeAt(i) : 0x00;
     }
   }
