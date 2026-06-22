@@ -122,6 +122,12 @@
       return;
     }
 
+    // Update dropzone to show loaded filename
+    const dropzone = $('sde-dropzone');
+    const textEl   = $('sde-dropzone-text');
+    if (dropzone) dropzone.classList.add('sde-dropzone--loaded');
+    if (textEl)   textEl.textContent = file.name;
+
     if ($('sde-auto-backup')?.checked) {
       ptSDE.downloadBackup();
       toast('Save loaded. Backup downloaded.', 'ok');
@@ -134,6 +140,9 @@
 
     $('sde-input-name').value  = info.name;
     $('sde-input-money').value = info.money;
+
+    // Pre-fill clone name with current profile name
+    $('sde-clone-name').value = info.name;
 
     $('sde-editor-body').hidden = false;
     renderSlotCards();
@@ -176,7 +185,7 @@
 
   function initBasicEdits() {
     $('sde-input-name').addEventListener('input', (e) => {
-      e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 7);
+      e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 7).toUpperCase();
     });
 
     $('sde-input-money').addEventListener('blur', (e) => {
@@ -188,11 +197,14 @@
 
   /* ----------------------------------------------------------
      PROFILE TOOLS
+     - New Save: always available (no file needed)
+     - Clone:    requires a loaded file
   ---------------------------------------------------------- */
 
   function initProfileTools() {
+    // New Save — always visible, no loaded file required
     $('sde-btn-new-save').addEventListener('click', () => {
-      const name = $('sde-new-name').value.trim().replace(/[^A-Za-z0-9]/g, '');
+      const name = $('sde-new-name').value.trim().replace(/[^A-Za-z0-9]/g, '').toUpperCase();
       if (!name) { toast('Enter a profile name (1–7 alphanumeric).', 'err'); return; }
       try {
         ptSDE.createNewSave(name);
@@ -202,9 +214,14 @@
       }
     });
 
+    $('sde-new-name').addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 7).toUpperCase();
+    });
+
+    // Clone — requires loaded file
     $('sde-btn-clone').addEventListener('click', () => {
       if (!ptSDE.isLoaded()) { toast('Load a save file first.', 'err'); return; }
-      const name = $('sde-clone-name').value.trim().replace(/[^A-Za-z0-9]/g, '');
+      const name = $('sde-clone-name').value.trim().replace(/[^A-Za-z0-9]/g, '').toUpperCase();
       if (!name) { toast('Enter a new profile name (1–7 alphanumeric).', 'err'); return; }
       try {
         ptSDE.cloneSave(name);
@@ -212,6 +229,10 @@
       } catch (err) {
         toast('❌ ' + err.message, 'err');
       }
+    });
+
+    $('sde-clone-name').addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 7).toUpperCase();
     });
   }
 
