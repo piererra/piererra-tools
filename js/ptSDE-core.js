@@ -11,23 +11,24 @@
      - Trigger file downloads
 
    Exports (on window.ptSDE):
-     loadSave(file)            → Promise<void>
-     getSaveInfo()             → { name, money, slots, headerOk, size }
+     loadSave(file)               → Promise<void>
+     getSaveInfo()                → { name, money, slots, headerOk, size }
      setName(str)
      setMoney(n)
-     setSlotPerf(slotIdx, mode)  mode: 'nil' | 'max'
+     setSlotPerf(slotIdx, mode)   mode: 'nil' | 'max'
      unlockSlot(slotIdx)
      unlockAllSlots()
      unlockAllParts()
      maxMoney()
-     injectCar(slotIdx, carData)   carData: [{off, hex}, ...]
-     extractCar(slotIdx)           → [{off, hex}, ...]
+     injectCar(slotIdx, carData)  carData: [{off, hex}, ...]
+     extractCar(slotIdx)          → [{off, hex}, ...]
      applyJsonPatch(slotIdx, json)
      applyTxtPatch(slotIdx, txt)
      downloadSave(filename)
      downloadBackup(filename)
-     createNewSave(name)
+     createProfile(name, money, carKey)  ← NEW: modal-based create flow
      cloneSave(name)
+     isLoaded()
 ============================================================ */
 
 (function (global) {
@@ -37,21 +38,19 @@
      OFFSETS — derived from community research + save analysis
   ---------------------------------------------------------- */
   const OFF = {
-    // File header magic (4 bytes): EA FC 09 11
+    // File header magic: ASCII "20CM"
     HEADER:        0x0000,
-    HEADER_MAGIC:  [0x32, 0x30, 0x43, 0x4D], // ASCII "20CM"
+    HEADER_MAGIC:  [0x32, 0x30, 0x43, 0x4D],
 
     // Money: signed 32-bit little-endian
     MONEY:         0xA16A,
 
-    // Profile name: ASCII, null-terminated, at a fixed offset.
-    // Verified against multiple real save files — this offset is reliable.
-    // NAME_READ_LEN is intentionally longer than the game's 7-char limit so
-    // names written by external tools/exploits (which can exceed 7 chars)
-    // still display correctly. Writing is always capped at 7 characters
-    // (the game's real limit) inside _writeName, regardless of read length.
-    NAME_OFFSET:    0xD225,
-    NAME_READ_LEN:  16,
+    // Profile name: ASCII, null-terminated, fixed offset.
+    // NAME_READ_LEN is longer than the game's 7-char limit so names
+    // written by external tools still display correctly.
+    // Writing is always capped at 7 characters.
+    NAME_OFFSET:   0xD225,
+    NAME_READ_LEN: 16,
 
     // Car slots: 5 slots, each 0x7F2 bytes, starting at 0x5AEC
     SLOT_BASE:     0x5AEC,
@@ -62,20 +61,26 @@
     SLOT_INUSE:    0x0000,   // relative to slot base
 
     // Performance data: 8 upgrade blocks per slot, each 0x40 bytes
-    // Offsets relative to slot base
     PERF_OFFSETS: [
       0x0004, 0x0044, 0x0084, 0x00C4,
       0x0104, 0x0144, 0x0184, 0x01C4
     ],
     PERF_BLOCK_SIZE: 0x40,
 
-    // Unlock all parts: 8 blocks of 0x10 bytes each starting at 0x0234
-    // relative to slot base — fill with 0xFF
+    // Unlock all parts: 8 blocks of 0x10 bytes each
     PARTS_OFFSETS: [
       0x0234, 0x0244, 0x0254, 0x0264,
       0x0274, 0x0284, 0x0294, 0x02A4
     ],
     PARTS_BLOCK_SIZE: 0x10,
+
+    // Active car area — absolute offsets used by car injection.
+    // These target the game's "current/active car" region (pre-slot area),
+    // NOT the slot memory. This is the same region GabriLex's tool writes to,
+    // confirmed against real injected save files.
+    // Writing order must be ascending offset to prevent corruption.
+    CAR_REGION_MIN: 0x5870,
+    CAR_REGION_MAX: 0xC3E6,  // 0xC3B0 + 0x36 (last block end)
   };
 
   /* ----------------------------------------------------------
@@ -89,17 +94,14 @@
      INTERNAL HELPERS
   ---------------------------------------------------------- */
 
-  /** Return a DataView over the working buffer */
   function _dv() {
     return new DataView(_buf);
   }
 
-  /** Read N bytes at offset, return Uint8Array */
   function _readBytes(off, len) {
     return new Uint8Array(_buf, off, len);
   }
 
-  /** Write bytes array at offset */
   function _writeBytes(off, bytes) {
     const view = new Uint8Array(_buf);
     for (let i = 0; i < bytes.length; i++) {
@@ -107,7 +109,6 @@
     }
   }
 
-  /** Parse hex string like "A0 FF 3C" or "A0FF3C" → Uint8Array */
   function _hexToBytes(hex) {
     const clean = hex.replace(/\s+/g, '');
     const out = new Uint8Array(clean.length / 2);
@@ -117,19 +118,18 @@
     return out;
   }
 
-  /** Uint8Array → hex string with spaces */
   function _bytesToHex(bytes) {
-    return Array.from(bytes).map(b => b.toString(16).padStart(2, '0').toUpperCase()).join(' ');
+    return Array.from(bytes)
+      .map(b => b.toString(16).padStart(2, '0').toUpperCase())
+      .join(' ');
   }
 
-  /** Deep copy an ArrayBuffer */
   function _copyBuffer(src) {
     const dst = new ArrayBuffer(src.byteLength);
     new Uint8Array(dst).set(new Uint8Array(src));
     return dst;
   }
 
-  /** Trigger a browser download of bytes as filename */
   function _download(bytes, filename) {
     const blob = new Blob([bytes], { type: 'application/octet-stream' });
     const url  = URL.createObjectURL(blob);
@@ -141,23 +141,9 @@
   }
 
   /* ----------------------------------------------------------
-     NAME — fixed-offset read/write
-     The profile name is stored as a null-terminated ASCII string at a
-     fixed offset. (A previous version of this tool scanned for the name
-     dynamically, but testing against real save files showed that scan
-     producing wrong results on every file tested — it kept finding false
-     matches before reaching the real name. The fixed offset below was
-     correct in every file tested, so it's now used directly.)
+     NAME
   ---------------------------------------------------------- */
 
-  /**
-   * Read profile name as string.
-   * Reads up to NAME_READ_LEN bytes, stopping at the first null. This is
-   * intentionally longer than the game's normal 7-character limit so that
-   * names written by external tools/exploits (which can exceed 7 chars)
-   * still display correctly here — this only affects reading/display,
-   * not what this tool itself can write.
-   */
   function _readName() {
     const off  = OFF.NAME_OFFSET;
     const view = new Uint8Array(_buf);
@@ -170,12 +156,6 @@
     return name || '?';
   }
 
-  /**
-   * Write profile name — always capped at 7 characters (the game's real
-   * limit), regardless of how long the previous/displayed name was.
-   * Clears the full NAME_READ_LEN region first so no leftover characters
-   * from a longer existing name remain after the new null terminator.
-   */
   function _writeName(name) {
     const off   = OFF.NAME_OFFSET;
     const clean = name.slice(0, 7).replace(/[^A-Za-z0-9]/g, '');
@@ -190,7 +170,7 @@
   ---------------------------------------------------------- */
 
   function _readMoney() {
-    return _dv().getInt32(OFF.MONEY, true);  // little-endian signed
+    return _dv().getInt32(OFF.MONEY, true);
   }
 
   function _writeMoney(n) {
@@ -201,24 +181,20 @@
      CAR SLOTS
   ---------------------------------------------------------- */
 
-  /** Absolute offset of slot N */
   function _slotOffset(slotIdx) {
     return OFF.SLOT_BASE + slotIdx * OFF.SLOT_SIZE;
   }
 
-  /** Read slot in-use flag */
   function _slotInUse(slotIdx) {
     const off = _slotOffset(slotIdx) + OFF.SLOT_INUSE;
     return new Uint8Array(_buf)[off] !== 0x00;
   }
 
-  /** Force-unlock a slot by writing 0x01 to its in-use flag */
   function _unlockSlot(slotIdx) {
     const off = _slotOffset(slotIdx) + OFF.SLOT_INUSE;
     new Uint8Array(_buf)[off] = 0x01;
   }
 
-  /** Read slot count info: { total, inUse } */
   function _readSlotInfo() {
     let inUse = 0;
     for (let i = 0; i < OFF.SLOT_COUNT; i++) {
@@ -231,15 +207,10 @@
      PERFORMANCE
   ---------------------------------------------------------- */
 
-  /**
-   * Set performance for a slot.
-   * mode 'nil' → write 0x00 to all perf bytes
-   * mode 'max' → write 0xFF to all perf bytes
-   */
   function _setSlotPerf(slotIdx, mode) {
-    const base  = _slotOffset(slotIdx);
-    const fill  = mode === 'max' ? 0xFF : 0x00;
-    const view  = new Uint8Array(_buf);
+    const base = _slotOffset(slotIdx);
+    const fill = mode === 'max' ? 0xFF : 0x00;
+    const view = new Uint8Array(_buf);
     for (const relOff of OFF.PERF_OFFSETS) {
       const abs = base + relOff;
       for (let i = 0; i < OFF.PERF_BLOCK_SIZE; i++) {
@@ -279,96 +250,90 @@
   }
 
   /* ----------------------------------------------------------
-     CAR INJECTION & PATCH
-     Patch format: [{off: number, hex: string}, ...]
-     'off' is relative to the START OF THE SLOT it's applied to
-     (0 .. OFF.SLOT_SIZE-1) — NOT an absolute file offset. This is what
-     lets the same car patch be injected into any of the 5 slots: the
-     actual write address is computed as slotBase + off at injection
-     time. (A previous version treated 'off' as an absolute file offset,
-     which meant every patch always landed on whichever slot it was
-     hardcoded for — usually Slot 1 — regardless of which slot the user
-     selected, silently overwriting the wrong car.)
+     CAR INJECTION (active car area — absolute offsets)
+
+     These blocks target the game's active/current car region,
+     NOT the slot memory. Offsets are absolute file positions.
+     Blocks are always written in ascending offset order.
+     Each block is bounds-checked against the buffer before write.
   ---------------------------------------------------------- */
 
-  /** Inject a car patch array into a slot. Each entry overwrites bytes
-   *  at (slot start + entry.off). */
+  function _injectActiveCar(carData) {
+    if (!carData || !carData.blocks || !carData.blocks.length) return false;
+
+    // Sort ascending — safe write order
+    const sorted = [...carData.blocks].sort((a, b) => a.off - b.off);
+
+    const view = new Uint8Array(_buf);
+    for (const block of sorted) {
+      const bytes = _hexToBytes(block.hex);
+      const off   = typeof block.off === 'string'
+        ? parseInt(block.off, 16)
+        : block.off;
+
+      // Bounds check: must land within file and within the known car region
+      if (off < OFF.CAR_REGION_MIN) continue;
+      if (off + bytes.length > _buf.byteLength) continue;
+
+      for (let i = 0; i < bytes.length; i++) {
+        view[off + i] = bytes[i];
+      }
+    }
+    return true;
+  }
+
+  /* ----------------------------------------------------------
+     SLOT-BASED CAR INJECTION (legacy — for patch files)
+     Patch format: [{off, hex}, ...]
+     'off' is relative to slot start (0 .. SLOT_SIZE-1)
+  ---------------------------------------------------------- */
+
   function _injectCar(slotIdx, carData) {
-    // First unlock the slot so the car shows up
     _unlockSlot(slotIdx);
-
     const slotBase = _slotOffset(slotIdx);
-
     for (const entry of carData) {
       const relOff = typeof entry.off === 'string'
         ? parseInt(entry.off, 16)
         : entry.off;
       const bytes = _hexToBytes(entry.hex);
-
-      // Bounds check: must land fully within this slot, not bleed into
-      // a neighboring slot or unrelated save data.
       if (relOff < 0 || relOff + bytes.length > OFF.SLOT_SIZE) continue;
-
       const off = slotBase + relOff;
       if (off + bytes.length > _buf.byteLength) continue;
       _writeBytes(off, bytes);
     }
   }
 
-  /** Extract car data from a slot as a patch array (offsets relative
-   *  to the slot's own start, so the result can be re-injected into
-   *  any slot). */
   function _extractCar(slotIdx) {
     const base    = _slotOffset(slotIdx);
     const size    = OFF.SLOT_SIZE;
     const bytes   = _readBytes(base, size);
     const patches = [];
-
-    // Chunk the slot into 16-byte blocks, skip all-zero blocks
-    const CHUNK = 16;
+    const CHUNK   = 16;
     for (let i = 0; i < size; i += CHUNK) {
       const chunk = bytes.slice(i, i + CHUNK);
       if (chunk.every(b => b === 0x00)) continue;
-      patches.push({
-        off: i,
-        hex: _bytesToHex(chunk),
-      });
+      patches.push({ off: i, hex: _bytesToHex(chunk) });
     }
     return patches;
   }
 
-  /** Apply a .json patch file content (string) to a slot */
   function _applyJsonPatch(slotIdx, json) {
     let data;
-    try {
-      data = JSON.parse(json);
-    } catch (e) {
+    try { data = JSON.parse(json); } catch (e) {
       throw new Error('Invalid .json patch: could not parse JSON');
     }
     if (!Array.isArray(data)) throw new Error('Invalid .json patch: expected an array');
     _injectCar(slotIdx, data);
   }
 
-  /**
-   * Apply legacy .txt patch format to a slot.
-   * Format: pairs of lines separated by blank lines:
-   *   <hex offset>
-   *   <hex data>
-   *   (blank line)
-   *   <hex offset>
-   *   <hex data>
-   */
   function _applyTxtPatch(slotIdx, txt) {
-    // First unlock the slot
     _unlockSlot(slotIdx);
-
     const lines  = txt.split(/\r?\n/);
     const blocks = [];
     let   i      = 0;
-
     while (i < lines.length) {
-      const offLine  = lines[i]?.trim();
-      const hexLine  = lines[i + 1]?.trim();
+      const offLine = lines[i]?.trim();
+      const hexLine = lines[i + 1]?.trim();
       if (offLine && hexLine) {
         const off   = parseInt(offLine, 16);
         const bytes = _hexToBytes(hexLine);
@@ -376,11 +341,9 @@
           blocks.push({ off, hex: hexLine });
         }
       }
-      // Skip to next blank-line-separated pair
       i += 2;
       while (i < lines.length && lines[i].trim() === '') i++;
     }
-
     for (const block of blocks) {
       const bytes = _hexToBytes(block.hex);
       if (block.off + bytes.length <= _buf.byteLength) {
@@ -390,37 +353,72 @@
   }
 
   /* ----------------------------------------------------------
-     NEW SAVE — built from embedded template (ptSDE-template.js)
-     The template script must define window.ptSDE_TEMPLATE as a
-     base64-encoded blank NFSU2 save file.
+     DECODE TEMPLATE — shared by createProfile and createNewSave
   ---------------------------------------------------------- */
 
-  function _buildNewSave(name) {
+  function _decodeTemplate() {
     if (!global.ptSDE_TEMPLATE) {
       throw new Error('Template not loaded. Make sure ptSDE-template.js is included.');
     }
-
-    // Decode base64 template to ArrayBuffer
-    const b64     = global.ptSDE_TEMPLATE;
-    const binStr  = atob(b64);
-    const bytes   = new Uint8Array(binStr.length);
+    const binStr = atob(global.ptSDE_TEMPLATE);
+    const bytes  = new Uint8Array(binStr.length);
     for (let i = 0; i < binStr.length; i++) {
       bytes[i] = binStr.charCodeAt(i);
     }
-    const newBuf = bytes.buffer;
-
-    // Temporarily swap _buf to write the name into the template
-    const prev = _buf;
-    _buf = newBuf;
-    _writeName(name);
-    const result = _copyBuffer(_buf);
-    _buf = prev;
-
-    return result;
+    return bytes.buffer;
   }
 
   /* ----------------------------------------------------------
-     CLONE SAVE — copy loaded save, rename profile
+     CREATE PROFILE (new modal flow)
+
+     1. Decode the Peugeot 206 base template
+     2. Write profile name at NAME_OFFSET
+     3. Write money at MONEY offset
+     4. If carKey provided → look up car in ptSDE_CARS and inject
+        into the active car region (absolute offsets)
+     5. If no carKey → Peugeot 206 stays as the default car
+     6. Download file named after the profile
+
+     carKey: string key from ptSDE_CARS, or null/undefined for default
+  ---------------------------------------------------------- */
+
+  function _createProfile(name, money, carKey) {
+    const clean = name.slice(0, 7).replace(/[^A-Za-z0-9]/g, '') || 'PLAYER';
+    const newBuf = _decodeTemplate();
+
+    // Temporarily swap _buf so shared write helpers work
+    const prev = _buf;
+    _buf = newBuf;
+
+    try {
+      // 1. Write name
+      _writeName(clean);
+
+      // 2. Write money (clamp to safe range)
+      const safeM = Math.max(0, Math.min(Number(money) || 0, 2147483647));
+      _writeMoney(safeM);
+
+      // 3. Inject car if requested
+      if (carKey && global.ptSDE_CARS) {
+        const car = global.ptSDE_CARS.findByKey(carKey);
+        if (car) {
+          _injectActiveCar(car);
+        }
+        // If carKey was given but not found — silently keep Peugeot default
+      }
+      // If no carKey — Peugeot 206 from template is already the car
+
+      const result = _copyBuffer(_buf);
+      _download(result, clean);
+
+    } finally {
+      // Always restore previous state — never corrupt a loaded save
+      _buf = prev;
+    }
+  }
+
+  /* ----------------------------------------------------------
+     CLONE SAVE
   ---------------------------------------------------------- */
 
   function _buildClone(name) {
@@ -440,17 +438,14 @@
 
   const ptSDE = {
 
-    /** Load a File object, parse it, store in state. Returns a Promise. */
     loadSave(file) {
       return new Promise((resolve, reject) => {
         if (!file) return reject(new Error('No file provided'));
         _filename = file.name;
-
         const reader = new FileReader();
         reader.onload = (e) => {
           _orig = e.target.result;
           _buf  = _copyBuffer(_orig);
-
           if (!_validateHeader()) {
             _buf  = null;
             _orig = null;
@@ -463,7 +458,6 @@
       });
     },
 
-    /** Returns current parsed save info */
     getSaveInfo() {
       if (!_buf) return null;
       const slots = _readSlotInfo();
@@ -477,105 +471,85 @@
       };
     },
 
-    /** Returns whether a specific slot is in-use */
     isSlotInUse(slotIdx) {
       if (!_buf) return false;
       return _slotInUse(slotIdx);
     },
 
-    /** Write profile name into working buffer */
-    setName(str) {
-      if (!_buf) return;
-      _writeName(str);
-    },
+    setName(str)      { if (_buf) _writeName(str); },
+    setMoney(n)       { if (_buf) _writeMoney(n); },
 
-    /** Write money into working buffer */
-    setMoney(n) {
-      if (!_buf) return;
-      _writeMoney(n);
-    },
-
-    /** Set performance for a slot (mode: 'nil' | 'max') */
     setSlotPerf(slotIdx, mode) {
-      if (!_buf) return;
-      _setSlotPerf(slotIdx, mode);
+      if (_buf) _setSlotPerf(slotIdx, mode);
     },
 
-    /** Unlock a single car slot */
     unlockSlot(slotIdx) {
-      if (!_buf) return;
-      _unlockSlot(slotIdx);
+      if (_buf) _unlockSlot(slotIdx);
     },
 
-    /** Unlock all 5 car slots */
     unlockAllSlots() {
       if (!_buf) return;
       for (let i = 0; i < OFF.SLOT_COUNT; i++) _unlockSlot(i);
     },
 
-    /** Unlock all parts across all slots */
     unlockAllParts() {
-      if (!_buf) return;
-      _unlockAllParts();
+      if (_buf) _unlockAllParts();
     },
 
-    /** Set money to maximum safe value */
     maxMoney() {
-      if (!_buf) return;
-      _writeMoney(2147483647);
+      if (_buf) _writeMoney(2147483647);
     },
 
-    /** Inject a car data array into a slot */
     injectCar(slotIdx, carData) {
-      if (!_buf) return;
-      _injectCar(slotIdx, carData);
+      if (_buf) _injectCar(slotIdx, carData);
     },
 
-    /** Extract car from a slot as patch array */
     extractCar(slotIdx) {
       if (!_buf) return [];
       return _extractCar(slotIdx);
     },
 
-    /** Apply a .json patch string to a slot */
     applyJsonPatch(slotIdx, json) {
-      if (!_buf) return;
-      _applyJsonPatch(slotIdx, json);
+      if (_buf) _applyJsonPatch(slotIdx, json);
     },
 
-    /** Apply a legacy .txt patch string to a slot */
     applyTxtPatch(slotIdx, txt) {
-      if (!_buf) return;
-      _applyTxtPatch(slotIdx, txt);
+      if (_buf) _applyTxtPatch(slotIdx, txt);
     },
 
-    /** Download the current working buffer as a .sav file */
     downloadSave(filename) {
-      if (!_buf) return;
-      _download(_buf, filename || _filename || 'save.sav');
+      if (_buf) _download(_buf, filename || _filename || 'save.sav');
     },
 
-    /** Download the original unmodified buffer as a .bak file */
     downloadBackup(filename) {
-      if (!_orig) return;
-      _download(_orig, filename || (_filename ? _filename + '.bak' : 'save.sav.bak'));
+      if (_orig) _download(_orig, filename || (_filename ? _filename + '.bak' : 'save.sav.bak'));
     },
 
-    /** Create a blank new save with given profile name and download it */
+    /**
+     * createProfile(name, money, carKey)
+     * The new modal-driven create flow.
+     *   name   — profile name string (max 7 alphanumeric)
+     *   money  — starting money (0 – 2,147,483,647)
+     *   carKey — car key from ptSDE_CARS, or null for Peugeot 206 default
+     */
+    createProfile(name, money, carKey) {
+      _createProfile(name, money, carKey);
+    },
+
+    /**
+     * createNewSave(name) — legacy single-arg create.
+     * Kept for backward compatibility. Uses Peugeot 206 base, no car injection.
+     */
     createNewSave(name) {
-      const clean = name.slice(0, 7).replace(/[^A-Za-z0-9]/g, '') || 'PLAYER';
-      const buf   = _buildNewSave(clean);
-      _download(buf, clean);
+      _createProfile(name, 0, null);
     },
 
-    /** Clone the loaded save with a new profile name and download it */
     cloneSave(name) {
       const clean = name.slice(0, 7).replace(/[^A-Za-z0-9]/g, '') || 'CLONE';
       const buf   = _buildClone(clean);
       _download(buf, clean);
     },
 
-    /** True if a save is currently loaded */
     isLoaded() {
       return _buf !== null;
     },
