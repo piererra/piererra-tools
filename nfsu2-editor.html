@@ -8,6 +8,9 @@
 </head>
 <body>
 
+  <!-- Vanta full-page background -->
+  <div id="vanta-bg" aria-hidden="true"></div>
+
   <div class="sde-stripe" aria-hidden="true"></div>
 
   <nav class="sde-nav">
@@ -16,165 +19,204 @@
     <span class="sde-nav__current">NFSU2 Save Editor</span>
   </nav>
 
-  <header class="sde-header">
-    <p class="sde-header__game">NEED FOR SPEED UNDERGROUND 2</p>
-    <h1 class="sde-header__title">Save Editor</h1>
-    <p class="sde-header__by">by Piererra</p>
-  </header>
+  <div class="sde-scroll">
 
-  <main class="sde-main">
+    <header class="sde-header">
+      <p class="sde-header__game">NEED FOR SPEED UNDERGROUND 2</p>
+      <h1 class="sde-header__title">Save Editor</h1>
+      <p class="sde-header__by">by Piererra</p>
+    </header>
 
-    <!-- LOAD FILE -->
-    <section class="sde-section" id="sde-sec-load">
+    <main class="sde-main">
 
-      <div class="sde-dropzone" id="sde-dropzone" role="button" tabindex="0"
-           aria-label="Drop NFSU2 save file or click to browse">
-        <svg class="sde-dropzone__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path d="M12 16V4M12 16l-4-4M12 16l4-4" stroke-linecap="round" stroke-linejoin="round"/>
-          <path d="M4 20h16" stroke-linecap="round"/>
-        </svg>
-        <p class="sde-dropzone__text">Drop your save file here</p>
-        <p class="sde-dropzone__sub">or click to browse</p>
-        <input type="file" id="sde-file-input" class="sde-dropzone__input"
-               aria-label="Select save file" />
-      </div>
-
-      <label class="sde-checkbox">
-        <input type="checkbox" id="sde-auto-backup" checked />
-        <span class="sde-checkbox__mark"></span>
-        <span class="sde-checkbox__label">Auto-download backup on load</span>
-      </label>
-
-      <div class="sde-infobar" id="sde-infobar" hidden>
-        <div class="sde-infobar__item">
-          <span class="sde-infobar__key">PROFILE</span>
-          <span class="sde-infobar__val" id="sde-info-name">—</span>
+      <!-- CREATE NEW SAVE — always visible, no file needed -->
+      <section class="sde-section sde-section--first">
+        <div class="sde-section__head">
+          <h2 class="sde-section__title">Create New Save</h2>
+          <p class="sde-section__desc">Generate a blank NFSU2 save — no existing file needed.</p>
         </div>
-        <div class="sde-infobar__item">
-          <span class="sde-infobar__key">MONEY</span>
-          <span class="sde-infobar__val sde-infobar__val--gold" id="sde-info-money">—</span>
-        </div>
-        <div class="sde-infobar__item">
-          <span class="sde-infobar__key">CAR SLOTS</span>
-          <span class="sde-infobar__val" id="sde-info-slots">—</span>
-        </div>
-        <div class="sde-infobar__item">
-          <span class="sde-infobar__key">HEADER</span>
-          <span class="sde-infobar__val" id="sde-info-header">—</span>
-        </div>
-        <div class="sde-infobar__item">
-          <span class="sde-infobar__key">SIZE</span>
-          <span class="sde-infobar__val" id="sde-info-size">—</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- EDITOR BODY -->
-    <div id="sde-editor-body" hidden>
-
-      <!-- PROFILE -->
-      <section class="sde-section">
-        <h2 class="sde-section__title">Profile</h2>
-        <div class="sde-row">
+        <div class="sde-row sde-row--aligned">
           <div class="sde-field">
-            <label class="sde-field__label" for="sde-input-name">
-              Name <span class="sde-field__hint">max 7 chars, alphanumeric</span>
+            <label class="sde-field__label" for="sde-new-name">
+              Profile Name <span class="sde-field__hint">1–7 alphanumeric</span>
             </label>
-            <input type="text" id="sde-input-name" class="sde-input"
+            <input type="text" id="sde-new-name" class="sde-input"
                    maxlength="7" placeholder="e.g. SPEEDER" autocomplete="off" />
           </div>
-          <div class="sde-field">
-            <label class="sde-field__label" for="sde-input-money">
-              Money <span class="sde-field__hint">max 2,147,483,647</span>
-            </label>
-            <input type="number" id="sde-input-money" class="sde-input sde-input--gold"
-                   min="0" max="2147483647" placeholder="e.g. 999999" />
-          </div>
-        </div>
-      </section>
-
-      <!-- CAR SLOTS -->
-      <section class="sde-section">
-        <div class="sde-section__head">
-          <h2 class="sde-section__title">Car Slots</h2>
-          <p class="sde-section__desc">MAX fills all performance stats. NIL zeroes them.</p>
-        </div>
-        <div class="sde-slots" id="sde-slots-grid"></div>
-      </section>
-
-      <!-- PROFILE TOOLS -->
-      <section class="sde-section">
-        <div class="sde-section__head">
-          <h2 class="sde-section__title">Profile Tools</h2>
-          <p class="sde-section__desc">Create a blank save or clone the loaded one under a new name.</p>
-        </div>
-
-        <div class="sde-card-grid">
-          <div class="sde-tool-card">
-            <p class="sde-tool-card__title">New Save</p>
-            <p class="sde-tool-card__desc">Generates a blank NFSU2 save ready to drop into your profiles folder.</p>
-            <div class="sde-field">
-              <label class="sde-field__label" for="sde-new-name">Profile Name <span class="sde-field__hint">1–7 alphanumeric</span></label>
-              <input type="text" id="sde-new-name" class="sde-input" maxlength="7" placeholder="e.g. SPEEDER" autocomplete="off" />
-            </div>
-            <button class="sde-btn sde-btn--lime" id="sde-btn-new-save">Create &amp; Download</button>
-          </div>
-
-          <div class="sde-tool-card">
-            <p class="sde-tool-card__title">Clone Save</p>
-            <p class="sde-tool-card__desc">Copies the loaded save under a new profile name — useful for backups or multiple profiles.</p>
-            <div class="sde-field">
-              <label class="sde-field__label" for="sde-clone-name">New Name <span class="sde-field__hint">1–7 alphanumeric</span></label>
-              <input type="text" id="sde-clone-name" class="sde-input" maxlength="7" placeholder="e.g. BACKUP1" autocomplete="off" />
-            </div>
-            <button class="sde-btn sde-btn--lime" id="sde-btn-clone">Clone &amp; Download</button>
-          </div>
-        </div>
-      </section>
-
-      <!-- CHEATS -->
-      <section class="sde-section">
-        <div class="sde-section__head">
-          <h2 class="sde-section__title">Cheats</h2>
-          <p class="sde-section__desc">One-click bulk operations applied to the save in memory.</p>
-        </div>
-        <div class="sde-cheat-grid">
-          <button class="sde-btn sde-btn--cheat" id="sde-btn-unlock-parts">Unlock All Parts</button>
-          <button class="sde-btn sde-btn--cheat" id="sde-btn-unlock-slots">Unlock All Car Slots</button>
-          <button class="sde-btn sde-btn--cheat sde-btn--cheat-gold" id="sde-btn-max-money">Max Money</button>
-        </div>
-      </section>
-
-      <!-- DOWNLOAD -->
-      <section class="sde-section sde-section--actions">
-        <div class="sde-action-row">
-          <button class="sde-btn sde-btn--primary" id="sde-btn-download">
-            Apply All &amp; Download
-          </button>
-          <button class="sde-btn sde-btn--ghost" id="sde-btn-backup">
-            Download Backup (.bak)
+          <button class="sde-btn sde-btn--lime sde-btn--inline" id="sde-btn-new-save">
+            Create &amp; Download
           </button>
         </div>
-        <p class="sde-action-hint">
-          Place the file in:
-          <code>%LOCALAPPDATA%\NFS Underground 2\&lt;Name&gt;\&lt;Name&gt;</code>
-        </p>
       </section>
 
-    </div>
-    <!-- end #sde-editor-body -->
+      <!-- DIVIDER -->
+      <div class="sde-divider"><span>or load an existing save</span></div>
 
-  </main>
+      <!-- LOAD FILE -->
+      <section class="sde-section">
+
+        <div class="sde-dropzone" id="sde-dropzone" role="button" tabindex="0"
+             aria-label="Drop NFSU2 save file or click to browse">
+          <svg class="sde-dropzone__icon" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M12 16V4M12 16l-4-4M12 16l4-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 20h16" stroke-linecap="round"/>
+          </svg>
+          <p class="sde-dropzone__text" id="sde-dropzone-text">Drop your save file here</p>
+          <p class="sde-dropzone__sub">or click to browse</p>
+          <input type="file" id="sde-file-input" class="sde-dropzone__input"
+                 aria-label="Select save file" />
+        </div>
+
+        <label class="sde-checkbox">
+          <input type="checkbox" id="sde-auto-backup" checked />
+          <span class="sde-checkbox__mark"></span>
+          <span class="sde-checkbox__label">Auto-download backup on load</span>
+        </label>
+
+        <div class="sde-infobar" id="sde-infobar" hidden>
+          <div class="sde-infobar__item">
+            <span class="sde-infobar__key">PROFILE</span>
+            <span class="sde-infobar__val" id="sde-info-name">—</span>
+          </div>
+          <div class="sde-infobar__item">
+            <span class="sde-infobar__key">MONEY</span>
+            <span class="sde-infobar__val sde-infobar__val--gold" id="sde-info-money">—</span>
+          </div>
+          <div class="sde-infobar__item">
+            <span class="sde-infobar__key">CAR SLOTS</span>
+            <span class="sde-infobar__val" id="sde-info-slots">—</span>
+          </div>
+          <div class="sde-infobar__item">
+            <span class="sde-infobar__key">HEADER</span>
+            <span class="sde-infobar__val" id="sde-info-header">—</span>
+          </div>
+          <div class="sde-infobar__item">
+            <span class="sde-infobar__key">SIZE</span>
+            <span class="sde-infobar__val" id="sde-info-size">—</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- EDITOR BODY — revealed after file load -->
+      <div id="sde-editor-body" hidden>
+
+        <!-- PROFILE -->
+        <section class="sde-section">
+          <h2 class="sde-section__title">Profile</h2>
+          <div class="sde-row">
+            <div class="sde-field">
+              <label class="sde-field__label" for="sde-input-name">
+                Name <span class="sde-field__hint">max 7 chars, alphanumeric</span>
+              </label>
+              <input type="text" id="sde-input-name" class="sde-input"
+                     maxlength="7" placeholder="e.g. SPEEDER" autocomplete="off" />
+            </div>
+            <div class="sde-field">
+              <label class="sde-field__label" for="sde-input-money">
+                Money <span class="sde-field__hint">max 2,147,483,647</span>
+              </label>
+              <input type="number" id="sde-input-money" class="sde-input sde-input--gold"
+                     min="0" max="2147483647" placeholder="e.g. 999999" />
+            </div>
+          </div>
+        </section>
+
+        <!-- CAR SLOTS -->
+        <section class="sde-section">
+          <div class="sde-section__head">
+            <h2 class="sde-section__title">Car Slots</h2>
+            <p class="sde-section__desc">MAX fills all performance stats. NIL zeroes them.</p>
+          </div>
+          <div class="sde-slots" id="sde-slots-grid"></div>
+        </section>
+
+        <!-- CLONE SAVE -->
+        <section class="sde-section">
+          <div class="sde-section__head">
+            <h2 class="sde-section__title">Clone Save</h2>
+            <p class="sde-section__desc">Copy the loaded save under a new profile name.</p>
+          </div>
+          <div class="sde-row sde-row--aligned">
+            <div class="sde-field">
+              <label class="sde-field__label" for="sde-clone-name">
+                New Name <span class="sde-field__hint">1–7 alphanumeric</span>
+              </label>
+              <input type="text" id="sde-clone-name" class="sde-input"
+                     maxlength="7" placeholder="e.g. BACKUP1" autocomplete="off" />
+            </div>
+            <button class="sde-btn sde-btn--lime sde-btn--inline" id="sde-btn-clone">
+              Clone &amp; Download
+            </button>
+          </div>
+        </section>
+
+        <!-- CHEATS -->
+        <section class="sde-section">
+          <div class="sde-section__head">
+            <h2 class="sde-section__title">Cheats</h2>
+            <p class="sde-section__desc">One-click bulk operations applied to the save in memory.</p>
+          </div>
+          <div class="sde-cheat-grid">
+            <button class="sde-btn sde-btn--cheat" id="sde-btn-unlock-parts">Unlock All Parts</button>
+            <button class="sde-btn sde-btn--cheat" id="sde-btn-unlock-slots">Unlock All Car Slots</button>
+            <button class="sde-btn sde-btn--cheat sde-btn--cheat-gold" id="sde-btn-max-money">Max Money</button>
+          </div>
+        </section>
+
+        <!-- DOWNLOAD -->
+        <section class="sde-section sde-section--actions sde-section--last">
+          <div class="sde-action-row">
+            <button class="sde-btn sde-btn--primary" id="sde-btn-download">
+              Apply All &amp; Download
+            </button>
+            <button class="sde-btn sde-btn--ghost" id="sde-btn-backup">
+              Download Backup (.bak)
+            </button>
+          </div>
+          <p class="sde-action-hint">
+            Place the file in:
+            <code>%LOCALAPPDATA%\NFS Underground 2\&lt;Name&gt;\&lt;Name&gt;</code>
+          </p>
+        </section>
+
+      </div>
+      <!-- end #sde-editor-body -->
+
+    </main>
+
+    <footer class="sde-footer">
+      <span>NFSU2 Save Editor &nbsp;·&nbsp; Piererra Tools</span>
+    </footer>
+
+  </div>
+  <!-- end .sde-scroll -->
 
   <div class="sde-toast" id="sde-toast" role="status" aria-live="polite"></div>
 
-  <footer class="sde-footer">
-    <span>NFSU2 Save Editor &nbsp;·&nbsp; Piererra Tools</span>
-  </footer>
+  <!-- three.js r134 + Vanta NET 0.5.24 via cdnjs / jsdelivr -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
 
   <script src="js/ptSDE-template.js"></script>
   <script src="js/ptSDE-core.js"></script>
   <script src="js/ptSDE-ui.js"></script>
+
+  <script>
+    VANTA.NET({
+      el: '#vanta-bg',
+      THREE: THREE,
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      color: 0x7dff00,         /* lime — NFSU2 accent */
+      backgroundColor: 0x080a10,
+      points: 8.0,
+      maxDistance: 20.0,
+      spacing: 20.0,
+      showDots: true
+    });
+  </script>
 
 </body>
 </html>
