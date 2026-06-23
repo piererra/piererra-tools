@@ -60,12 +60,21 @@
     // Within each slot — slot-in-use flag (1 = active, 0 = empty)
     SLOT_INUSE:    0x0000,   // relative to slot base
 
-    // Performance data: 8 upgrade blocks per slot, each 0x40 bytes
-    PERF_OFFSETS: [
-      0x0004, 0x0044, 0x0084, 0x00C4,
-      0x0104, 0x0144, 0x0184, 0x01C4
+    // Performance — confirmed from real save diff (Piererra_1_ vs Piererra_2_)
+    // 9 upgrade level floats (float32 LE, 4B each) at these slot-relative offsets.
+    //   10.0 = 00002041 — fast + stable, no UI crash  ← our max
+    //    3.0 = 00004040 — other site max (slower)
+    //   0xFF = NaN      — crashes car selection + mod shops
+    PERF_UPGRADE_FLOATS: [
+      0x044, 0x048, 0x04C, 0x050, 0x054, 0x058, 0x05C, 0x060, 0x064,
     ],
-    PERF_BLOCK_SIZE: 0x40,
+    // Upgrade unlock flags: slot+0x094 to slot+0x0CB (56 bytes, 0x01 = unlocked)
+    PERF_FLAGS_START: 0x094,
+    PERF_FLAGS_SIZE:  0x038,
+    // Upgrade counters — 4-byte LE fields (confirmed changed in safe max save)
+    PERF_COUNTER_1: 0x1AC,   // 00 01 00 00
+    PERF_COUNTER_2: 0x1E8,   // 00 00 00 01
+    PERF_COUNTER_3: 0x200,   // 00 00 00 01
 
     // Unlock all parts: 8 blocks of 0x10 bytes each
     PARTS_OFFSETS: [
@@ -209,13 +218,41 @@
 
   function _setSlotPerf(slotIdx, mode) {
     const base = _slotOffset(slotIdx);
-    const fill = mode === 'max' ? 0xFF : 0x00;
     const view = new Uint8Array(_buf);
-    for (const relOff of OFF.PERF_OFFSETS) {
-      const abs = base + relOff;
-      for (let i = 0; i < OFF.PERF_BLOCK_SIZE; i++) {
-        view[abs + i] = fill;
+
+    if (mode === 'max') {
+      // Write 10.0 (00 00 20 41) into each of the 9 upgrade float positions.
+      // Confirmed safe from real save analysis — fast car, no UI crash.
+      const f10 = [0x00, 0x00, 0x20, 0x41];
+      for (const relOff of OFF.PERF_UPGRADE_FLOATS) {
+        const abs = base + relOff;
+        for (let i = 0; i < 4; i++) view[abs + i] = f10[i];
       }
+      // Upgrade unlock flags: fill 0x01 (unlocked)
+      for (let i = 0; i < OFF.PERF_FLAGS_SIZE; i++) {
+        view[base + OFF.PERF_FLAGS_START + i] = 0x01;
+      }
+      // Upgrade counters
+      const c1 = [0x00, 0x01, 0x00, 0x00];
+      const c2 = [0x00, 0x00, 0x00, 0x01];
+      for (let i = 0; i < 4; i++) view[base + OFF.PERF_COUNTER_1 + i] = c1[i];
+      for (let i = 0; i < 4; i++) view[base + OFF.PERF_COUNTER_2 + i] = c2[i];
+      for (let i = 0; i < 4; i++) view[base + OFF.PERF_COUNTER_3 + i] = c2[i];
+
+    } else {
+      // NIL — zero all upgrade floats and flags back to stock
+      const f0 = [0x00, 0x00, 0x00, 0x00];
+      for (const relOff of OFF.PERF_UPGRADE_FLOATS) {
+        const abs = base + relOff;
+        for (let i = 0; i < 4; i++) view[abs + i] = f0[i];
+      }
+      for (let i = 0; i < OFF.PERF_FLAGS_SIZE; i++) {
+        view[base + OFF.PERF_FLAGS_START + i] = 0x00;
+      }
+      // Zero counters back to stock
+      for (let i = 0; i < 4; i++) view[base + OFF.PERF_COUNTER_1 + i] = 0x00;
+      for (let i = 0; i < 4; i++) view[base + OFF.PERF_COUNTER_2 + i] = 0x00;
+      for (let i = 0; i < 4; i++) view[base + OFF.PERF_COUNTER_3 + i] = 0x00;
     }
   }
 
