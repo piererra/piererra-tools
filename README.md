@@ -17,6 +17,7 @@ Piererra Tools is a growing collection of browser-based utilities built entirely
 - [Tools](#tools)
 - [Project Structure](#project-structure)
 - [Design System](#design-system)
+- [Language Selector](#language-selector)
 - [Open Source](#open-source)
 - [Contributing](#contributing)
 - [Roadmap](#roadmap)
@@ -117,23 +118,29 @@ piererra-tools/
 ├── nfsu2-editor.html           # NFSU2 Save Editor page
 │
 ├── css/
-│   ├── portal.css              # Cyberpunk portal theme
-│   └── nfsu2-editor.css        # NFSU2 editor theme (NFS Underground 2 aesthetic)
+│   ├── portal.css              # Cyberpunk portal theme + language selector styles
+│   └── nfsu2-editor.css        # NFSU2 editor theme + language selector styles
 │
-└── js/
-    ├── ptSDE-core.js           # Binary engine — all save file read/write logic
-    ├── ptSDE-ui.js             # DOM wiring — events, rendering, toast notifications
-    └── ptSDE-template.js       # Base64-encoded blank NFSU2 save (used for new-save creation)
+├── js/
+│   ├── ptSDE-core.js           # Binary engine — all save file read/write logic
+│   ├── ptSDE-ui.js             # DOM wiring — events, rendering, toast notifications
+│   ├── ptSDE-cars.js           # Car list data for the new-save car selector
+│   └── ptSDE-template.js       # Base64-encoded blank NFSU2 save (used for new-save creation)
+│
+├── robots.txt                  # Search engine crawl rules
+├── sitemap.xml                 # XML sitemap for SEO
+├── site.webmanifest            # PWA manifest
+└── googlec52b3a73db4c4f44.html # Google Search Console verification
 ```
 
 <details>
 <summary><strong>🔍 Detailed file descriptions</strong></summary>
 
 #### `index.html`
-The portal entry point. Renders a cyberpunk-themed card grid using `portal.css`. Cards link to each tool or show a locked state for upcoming tools. Uses a CSS-only scanline overlay for CRT aesthetic.
+The portal entry point. Renders a cyberpunk-themed card grid using `portal.css`. Cards link to each tool or show a locked state for upcoming tools. Uses a CSS-only scanline overlay for CRT aesthetic. Includes the language selector widget in the header and Discord/GitHub links in the footer.
 
 #### `nfsu2-editor.html`
-The NFSU2 Save Editor page. Pulls in the Vanta.js NET animation (via CDN) for a full-page animated background. Loads the three editor scripts in dependency order: `ptSDE-template.js` → `ptSDE-core.js` → `ptSDE-ui.js`.
+The NFSU2 Save Editor page. Pulls in the Vanta.js NET animation (via CDN) for a full-page animated background. Loads the three editor scripts in dependency order: `ptSDE-template.js` → `ptSDE-cars.js` → `ptSDE-core.js` → `ptSDE-ui.js`. Includes the language selector widget in the nav bar and Discord/GitHub links in the footer.
 
 #### `css/portal.css`
 Cyberpunk design system for the portal:
@@ -142,6 +149,7 @@ Cyberpunk design system for the portal:
 - Glitch title animation via CSS pseudo-elements
 - CSS scanlines via `repeating-linear-gradient`
 - Responsive card grid
+- Language selector (`.pt-lang`, `.pt-lang__select`) and footer link styles
 
 #### `css/nfsu2-editor.css`
 Need for Speed Underground 2 themed editor UI:
@@ -149,6 +157,7 @@ Need for Speed Underground 2 themed editor UI:
 - Semi-transparent panels over Vanta.js animated background
 - Scrollable content wrapper sitting above the fixed Vanta canvas (z-index layering)
 - Slot cards, dropzone, infobar, toast notification, and cheat button components
+- Language selector (`.sde-lang`, `.sde-lang__select`) and footer link styles
 
 #### `js/ptSDE-core.js`
 The binary read/write engine. Exposes `window.ptSDE` with the full public API. Self-contained IIFE — no external dependencies. Handles:
@@ -173,6 +182,9 @@ The DOM layer. Wires all UI elements to `ptSDE` core methods:
 - Profile name sanitization (auto-uppercase, strip non-alphanumeric)
 - Cheat button handlers
 - Toast notification system with auto-dismiss
+
+#### `js/ptSDE-cars.js`
+Car list data used to populate the car selector in the Create New Profile modal. Referenced by `ptSDE-ui.js` via `buildCarSelect()`.
 
 #### `js/ptSDE-template.js`
 A single `window.ptSDE_TEMPLATE = "..."` assignment containing a base64-encoded blank NFSU2 save file (~73KB raw). Used by `ptSDE-core.js` to construct new saves from scratch. Generated once from a real clean save.
@@ -220,6 +232,16 @@ A single `window.ptSDE_TEMPLATE = "..."` assignment containing a base64-encoded 
 Vanta.js NET config: `color: 0x7dff00`, `backgroundColor: 0x080a10`, `points: 8`, `maxDistance: 20`, `spacing: 20`.
 
 </details>
+
+---
+
+## Language Selector
+
+Both pages include a language selector widget in the navigation area. It lists 75+ world languages grouped by region (Common, Europe, Americas, Middle East, Africa, Asia & Pacific). The selected language is persisted to `localStorage` under the key `pt-lang` and restored on page load — the selection is shared across both pages.
+
+> **Note:** The selector is a UI placeholder for future i18n support. The site UI language does not change yet — full translation support is planned for a future update.
+
+No flag emoji are used anywhere in the selector to ensure full GitHub compatibility (avoids bidirectional Unicode warnings).
 
 ---
 
@@ -288,6 +310,9 @@ Open a GitHub Issue with the label `tool idea` and describe:
 
 - [x] Portal homepage with tool card grid
 - [x] NFSU2 Save Data Editor (create, load, edit, clone, cheat)
+- [x] Language selector widget (75+ languages, localStorage persistence)
+- [x] Discord & GitHub links in footer
+- [ ] Full i18n — translated UI strings for all languages
 - [ ] Tool 02 — TBD
 - [ ] Tool 03 — TBD
 - [ ] Light mode toggle (optional)
@@ -300,6 +325,7 @@ Open a GitHub Issue with the label `tool idea` and describe:
 **Piererra** — indie developer, building browser tools from an Android phone.
 
 - GitHub: [@piererra](https://github.com/piererra)
+- Discord: [piererra](https://discord.com/users/1413503870373462070)
 
 ---
 
