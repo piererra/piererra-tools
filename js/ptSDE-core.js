@@ -256,7 +256,25 @@
      NOT the slot memory. Offsets are absolute file positions.
      Blocks are always written in ascending offset order.
      Each block is bounds-checked against the buffer before write.
+
+     CRITICAL: Some patch blocks (e.g. 0x5B20) land inside slot
+     memory even though they're intended for the active car area.
+     Writing them into a fresh template corrupts the slot's car
+     data → crash when opening car selection in career mode.
+     Any block overlapping a slot range is silently skipped.
+     (GabriLex's tool works because it patches an existing save
+     where that slot data is already overwritten by the target car.)
   ---------------------------------------------------------- */
+
+  // All 5 slot ranges — absolute [start, end) pairs
+  const SLOT_RANGES = Array.from({ length: OFF.SLOT_COUNT }, (_, i) => [
+    OFF.SLOT_BASE + i * OFF.SLOT_SIZE,
+    OFF.SLOT_BASE + i * OFF.SLOT_SIZE + OFF.SLOT_SIZE,
+  ]);
+
+  function _inSlotRange(off) {
+    return SLOT_RANGES.some(([s, e]) => off >= s && off < e);
+  }
 
   function _injectActiveCar(carData) {
     if (!carData || !carData.blocks || !carData.blocks.length) return false;
@@ -271,8 +289,11 @@
         ? parseInt(block.off, 16)
         : block.off;
 
-      // Bounds check: must land within file and within the known car region
+      // Skip blocks before the known active car region
       if (off < OFF.CAR_REGION_MIN) continue;
+      // Skip blocks that overlap any slot — would corrupt career mode car data
+      if (_inSlotRange(off)) continue;
+      // Skip blocks that exceed the file
       if (off + bytes.length > _buf.byteLength) continue;
 
       for (let i = 0; i < bytes.length; i++) {
@@ -382,7 +403,7 @@
      carKey: string key from ptSDE_CARS, or null/undefined for default
   ---------------------------------------------------------- */
 
-  function _createProfile(name, money, carKey) {
+  function _createProfile(name, money, carKey, unlockParts) {
     const clean = name.slice(0, 7).replace(/[^A-Za-z0-9]/g, '') || 'PLAYER';
     const newBuf = _decodeTemplate();
 
@@ -398,15 +419,22 @@
       const safeM = Math.max(0, Math.min(Number(money) || 0, 2147483647));
       _writeMoney(safeM);
 
-      // 3. Inject car if requested
+      // 3. Inject car if requested.
+      //    Blocks landing inside slot ranges are skipped — they would
+      //    corrupt career mode car selection on a fresh template save.
       if (carKey && global.ptSDE_CARS) {
         const car = global.ptSDE_CARS.findByKey(carKey);
         if (car) {
           _injectActiveCar(car);
         }
-        // If carKey was given but not found — silently keep Peugeot default
+        // carKey not found → silently keep Peugeot 206 default
       }
-      // If no carKey — Peugeot 206 from template is already the car
+      // No carKey → Peugeot 206 from template is already the car
+
+      // 4. Unlock all parts if requested
+      if (unlockParts) {
+        _unlockAllParts();
+      }
 
       const result = _copyBuffer(_buf);
       _download(result, clean);
@@ -526,14 +554,15 @@
     },
 
     /**
-     * createProfile(name, money, carKey)
+     * createProfile(name, money, carKey, unlockParts)
      * The new modal-driven create flow.
-     *   name   — profile name string (max 7 alphanumeric)
-     *   money  — starting money (0 – 2,147,483,647)
-     *   carKey — car key from ptSDE_CARS, or null for Peugeot 206 default
+     *   name         — profile name string (max 7 alphanumeric)
+     *   money        — starting money (0 – 2,147,483,647)
+     *   carKey       — car key from ptSDE_CARS, or null for Peugeot 206 default
+     *   unlockParts  — boolean, if true unlocks all parts across all slots
      */
-    createProfile(name, money, carKey) {
-      _createProfile(name, money, carKey);
+    createProfile(name, money, carKey, unlockParts) {
+      _createProfile(name, money, carKey, unlockParts);
     },
 
     /**
