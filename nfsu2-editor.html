@@ -9,16 +9,180 @@
   <meta name="keywords" content="NFSU2 save editor, Need for Speed Underground 2 save editor, NFS Underground 2 cheat, NFSU2 save file, NFS save editor online, nfsu2 money cheat, nfsu2 parts unlock" />
   <meta name="author" content="Piererra" />
 
-  <!-- Open Graph -->
   <meta property="og:title" content="NFSU2 Save Editor — Piererra Tools" />
   <meta property="og:description" content="Edit your Need for Speed Underground 2 save file in the browser. Max money, unlock all parts, clone profiles — free and no install required." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://piererra-tools.vercel.app/nfsu2-editor.html" />
 
-  <!-- Canonical -->
   <link rel="canonical" href="https://piererra-tools.vercel.app/nfsu2-editor.html" />
   <link rel="manifest" href="site.webmanifest" />
   <link rel="stylesheet" href="css/nfsu2-editor.css" />
+
+  <style>
+    /* ── CREATE PROFILE MODAL ─────────────────────────────────── */
+    .sde-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: rgba(4, 6, 12, 0.88);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+    .sde-modal--open {
+      display: flex;
+    }
+    .sde-modal__box {
+      background: rgba(12, 15, 24, 0.98);
+      border: 1px solid #7dff00;
+      border-radius: 6px;
+      width: 100%;
+      max-width: 440px;
+      padding: 1.75rem 1.5rem 1.5rem;
+      position: relative;
+      box-shadow: 0 0 40px rgba(125, 255, 0, 0.12);
+    }
+    .sde-modal__title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: #7dff00;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      margin: 0 0 .25rem;
+    }
+    .sde-modal__sub {
+      font-size: .72rem;
+      color: #424B68;
+      margin: 0 0 1.4rem;
+    }
+    .sde-modal__close {
+      position: absolute;
+      top: .9rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: #424B68;
+      font-size: 1.2rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 0;
+      transition: color .15s;
+    }
+    .sde-modal__close:hover { color: #ff4040; }
+
+    .sde-modal__fields {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .sde-modal__field label {
+      display: block;
+      font-size: .7rem;
+      color: #7dff00;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: .35rem;
+    }
+    .sde-modal__field label span {
+      color: #424B68;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+    .sde-modal__field input,
+    .sde-modal__field select {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(7, 9, 16, 0.95);
+      border: 1px solid #1e2a3a;
+      border-radius: 4px;
+      color: #CDD3E8;
+      font-family: inherit;
+      font-size: .85rem;
+      padding: .55rem .75rem;
+      outline: none;
+      transition: border-color .15s;
+    }
+    .sde-modal__field input:focus,
+    .sde-modal__field select:focus {
+      border-color: #7dff00;
+    }
+    .sde-modal__field input.gold { color: #E0B030; }
+
+    .sde-modal__money-row {
+      display: flex;
+      gap: .5rem;
+      align-items: stretch;
+    }
+    .sde-modal__money-row input { flex: 1; }
+    .sde-modal__max-btn {
+      background: rgba(224,176,48,.1);
+      border: 1px solid #E0B030;
+      border-radius: 4px;
+      color: #E0B030;
+      font-family: inherit;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      padding: 0 .75rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background .15s;
+    }
+    .sde-modal__max-btn:hover { background: rgba(224,176,48,.22); }
+
+    .sde-modal__field select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%237dff00' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right .75rem center;
+      padding-right: 2rem;
+    }
+    .sde-modal__field select option,
+    .sde-modal__field select optgroup {
+      background: #0c0f18;
+      color: #CDD3E8;
+    }
+
+    .sde-modal__actions {
+      display: flex;
+      gap: .75rem;
+      margin-top: 1.5rem;
+    }
+    .sde-modal__confirm {
+      flex: 1;
+      background: #7dff00;
+      border: none;
+      border-radius: 4px;
+      color: #080A10;
+      font-family: inherit;
+      font-size: .78rem;
+      font-weight: 800;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .7rem 1rem;
+      cursor: pointer;
+      transition: opacity .15s;
+    }
+    .sde-modal__confirm:hover { opacity: .88; }
+    .sde-modal__cancel {
+      background: none;
+      border: 1px solid #1e2a3a;
+      border-radius: 4px;
+      color: #424B68;
+      font-family: inherit;
+      font-size: .78rem;
+      letter-spacing: .08em;
+      padding: .7rem 1rem;
+      cursor: pointer;
+      transition: border-color .15s, color .15s;
+    }
+    .sde-modal__cancel:hover {
+      border-color: #ff4040;
+      color: #ff4040;
+    }
+  </style>
 </head>
 <body>
 
@@ -43,24 +207,17 @@
 
     <main class="sde-main">
 
-      <!-- CREATE NEW SAVE — always visible, no file needed -->
+      <!-- CREATE NEW PROFILE — opens modal -->
       <section class="sde-section sde-section--first">
         <div class="sde-section__head">
-          <h2 class="sde-section__title">Create New Save</h2>
-          <p class="sde-section__desc">Generate a blank NFSU2 save — no existing file needed.</p>
+          <h2 class="sde-section__title">Create New Profile</h2>
+          <p class="sde-section__desc">
+            Generate a fresh NFSU2 save. Choose your profile name, starting money, and car.
+          </p>
         </div>
-        <div class="sde-row sde-row--aligned">
-          <div class="sde-field">
-            <label class="sde-field__label" for="sde-new-name">
-              Profile Name <span class="sde-field__hint">1–7 alphanumeric</span>
-            </label>
-            <input type="text" id="sde-new-name" class="sde-input"
-                   maxlength="7" placeholder="e.g. SPEEDER" autocomplete="off" />
-          </div>
-          <button class="sde-btn sde-btn--lime sde-btn--inline" id="sde-btn-new-save">
-            Create &amp; Download
-          </button>
-        </div>
+        <button class="sde-btn sde-btn--lime" id="sde-btn-new-save">
+          + Create New Profile
+        </button>
       </section>
 
       <!-- DIVIDER -->
@@ -200,19 +357,81 @@
     </main>
 
     <footer class="sde-footer">
-      <span>NFSU2 Save Editor &nbsp;·&nbsp; Piererra Tools</span>
+      <span>NFSU2 Save Editor &nbsp;·&nbsp; Piererra Tools &nbsp;·&nbsp; Open Source</span>
     </footer>
 
   </div>
   <!-- end .sde-scroll -->
 
+  <!-- CREATE PROFILE MODAL -->
+  <div class="sde-modal" id="sde-modal" role="dialog" aria-modal="true"
+       aria-labelledby="sde-modal-title">
+    <div class="sde-modal__box">
+
+      <button class="sde-modal__close" id="sde-modal-close" aria-label="Close">✕</button>
+
+      <h2 class="sde-modal__title" id="sde-modal-title">Create New Profile</h2>
+      <p class="sde-modal__sub">Generates a fresh NFSU2 save file ready to play.</p>
+
+      <div class="sde-modal__fields">
+
+        <!-- Profile Name -->
+        <div class="sde-modal__field">
+          <label for="sde-modal-name">
+            Profile Name <span>(1–7 alphanumeric, game limit)</span>
+          </label>
+          <input type="text" id="sde-modal-name"
+                 maxlength="7" placeholder="e.g. SPEEDER" autocomplete="off" />
+        </div>
+
+        <!-- Starting Money -->
+        <div class="sde-modal__field">
+          <label for="sde-modal-money">
+            Starting Money <span>(0 – 2,147,483,647)</span>
+          </label>
+          <div class="sde-modal__money-row">
+            <input type="number" id="sde-modal-money" class="gold"
+                   min="0" max="2147483647" value="0" placeholder="0" />
+            <button class="sde-modal__max-btn" id="sde-modal-max-money"
+                    type="button">MAX</button>
+          </div>
+        </div>
+
+        <!-- Car Selection -->
+        <div class="sde-modal__field">
+          <label for="sde-modal-car">
+            Starting Car <span>(optional — default is Peugeot 206)</span>
+          </label>
+          <select id="sde-modal-car">
+            <!-- Populated by ptSDE-ui.js → buildCarSelect() -->
+          </select>
+        </div>
+
+      </div>
+
+      <div class="sde-modal__actions">
+        <button class="sde-modal__confirm" id="sde-modal-confirm" type="button">
+          Create &amp; Download
+        </button>
+        <button class="sde-modal__cancel" id="sde-modal-cancel-btn"
+                type="button" onclick="document.getElementById('sde-modal').classList.remove('sde-modal--open')">
+          Cancel
+        </button>
+      </div>
+
+    </div>
+  </div>
+  <!-- end .sde-modal -->
+
   <div class="sde-toast" id="sde-toast" role="status" aria-live="polite"></div>
 
-  <!-- three.js r134 + Vanta NET 0.5.24 via cdnjs / jsdelivr -->
+  <!-- three.js r134 + Vanta NET 0.5.24 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
 
+  <!-- Load order matters: template → cars → core → ui -->
   <script src="js/ptSDE-template.js"></script>
+  <script src="js/ptSDE-cars.js"></script>
   <script src="js/ptSDE-core.js"></script>
   <script src="js/ptSDE-ui.js"></script>
 
@@ -223,7 +442,7 @@
       mouseControls: true,
       touchControls: true,
       gyroControls: false,
-      color: 0x7dff00,         /* lime — NFSU2 accent */
+      color: 0x7dff00,
       backgroundColor: 0x080a10,
       points: 8.0,
       maxDistance: 20.0,
