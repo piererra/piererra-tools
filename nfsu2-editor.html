@@ -235,9 +235,120 @@
   <div class="sde-stripe" aria-hidden="true"></div>
 
   <nav class="sde-nav">
-    <a href="index.html" class="sde-nav__back">← Piererra Tools</a>
+    <a href="index.html" class="sde-nav__back">&#8592; Piererra Tools</a>
     <span class="sde-nav__sep">/</span>
     <span class="sde-nav__current">NFSU2 Save Editor</span>
+    <div class="sde-lang" aria-label="Language selector">
+      <span class="sde-lang__icon">&#9881;</span>
+      <select class="sde-lang__select" id="sde-lang-select" aria-label="Select language" title="Language / Region (UI language coming soon)">
+        <optgroup label="-- Common --">
+          <option value="en" selected>English</option>
+          <option value="fr">Français</option>
+          <option value="es">Español</option>
+          <option value="de">Deutsch</option>
+          <option value="pt">Português</option>
+          <option value="ru">Русский</option>
+          <option value="zh-hans">中文 (简体)</option>
+          <option value="zh-hant">中文 (繁體)</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="ar">العربية</option>
+          <option value="hi">हिन्दी</option>
+          <option value="it">Italiano</option>
+          <option value="nl">Nederlands</option>
+          <option value="pl">Polski</option>
+          <option value="tr">Türkçe</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="th">ภาษาไทย</option>
+          <option value="uk">Українська</option>
+        </optgroup>
+        <optgroup label="-- Europe --">
+          <option value="sq">Shqip</option>
+          <option value="hy">Հայերեն</option>
+          <option value="az">Azərbaycanca</option>
+          <option value="eu">Euskara</option>
+          <option value="be">Беларуская</option>
+          <option value="bs">Bosanski</option>
+          <option value="bg">Български</option>
+          <option value="ca">Català</option>
+          <option value="hr">Hrvatski</option>
+          <option value="cs">Čeština</option>
+          <option value="da">Dansk</option>
+          <option value="et">Eesti</option>
+          <option value="fi">Suomi</option>
+          <option value="gl">Galego</option>
+          <option value="ka">ქართული</option>
+          <option value="el">Ελληνικά</option>
+          <option value="hu">Magyar</option>
+          <option value="is">Íslenska</option>
+          <option value="ga">Gaeilge</option>
+          <option value="lv">Latviešu</option>
+          <option value="lt">Lietuvių</option>
+          <option value="lb">Lëtzebuergesch</option>
+          <option value="mk">Македонски</option>
+          <option value="mt">Malti</option>
+          <option value="no">Norsk</option>
+          <option value="ro">Română</option>
+          <option value="sr">Српски</option>
+          <option value="sk">Slovenčina</option>
+          <option value="sl">Slovenščina</option>
+          <option value="sv">Svenska</option>
+          <option value="cy">Cymraeg</option>
+        </optgroup>
+        <optgroup label="-- Americas --">
+          <option value="es-419">Español (Latam)</option>
+          <option value="ht">Kreyòl ayisyen</option>
+          <option value="qu">Quechua</option>
+        </optgroup>
+        <optgroup label="-- Middle East --">
+          <option value="fa">فارسی</option>
+          <option value="he">עברית</option>
+          <option value="ku">Kurdî</option>
+          <option value="ps">پښتو</option>
+          <option value="ur">اردو</option>
+        </optgroup>
+        <optgroup label="-- Africa --">
+          <option value="af">Afrikaans</option>
+          <option value="am">አማርኛ</option>
+          <option value="ha">Hausa</option>
+          <option value="ig">Igbo</option>
+          <option value="rw">Kinyarwanda</option>
+          <option value="mg">Malagasy</option>
+          <option value="ny">Chichewa</option>
+          <option value="sn">Shona</option>
+          <option value="so">Soomaali</option>
+          <option value="st">Sesotho</option>
+          <option value="sw">Kiswahili</option>
+          <option value="xh">isiXhosa</option>
+          <option value="yo">Yorùbá</option>
+          <option value="zu">isiZulu</option>
+        </optgroup>
+        <optgroup label="-- Asia &amp; Pacific --">
+          <option value="bn">বাংলা</option>
+          <option value="my">မြန်မာဘာသာ</option>
+          <option value="zh-yue">粵語</option>
+          <option value="fil">Filipino</option>
+          <option value="gu-in">ગુજરાતી</option>
+          <option value="kn">ಕನ್ನಡ</option>
+          <option value="km">ភាសាខ្មែរ</option>
+          <option value="lo">ລາວ</option>
+          <option value="ms">Bahasa Melayu</option>
+          <option value="ml">മലയാളം</option>
+          <option value="mr">मराठी</option>
+          <option value="mn">Монгол</option>
+          <option value="ne">नेपाली</option>
+          <option value="pa">ਪੰਜਾਬੀ</option>
+          <option value="si">සිංහල</option>
+          <option value="ta">தமிழ்</option>
+          <option value="te">తెలుగు</option>
+          <option value="tl">Tagalog</option>
+          <option value="uz">Oʻzbekcha</option>
+          <option value="mi">Māori</option>
+          <option value="sm">Gagana Samoa</option>
+        </optgroup>
+      </select>
+    </div>
   </nav>
 
   <div class="sde-scroll">
@@ -401,6 +512,13 @@
 
     <footer class="sde-footer">
       <span>NFSU2 Save Editor &nbsp;·&nbsp; Piererra Tools &nbsp;·&nbsp; Open Source</span>
+      <div class="sde-footer__links">
+        <a class="sde-footer__link" href="https://discord.com/users/1413503870373462070" target="_blank" rel="noopener noreferrer">Discord</a>
+        <span class="sde-footer__sep">·</span>
+        <a class="sde-footer__link" href="https://github.com/piererra" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span class="sde-footer__sep">·</span>
+        <a class="sde-footer__link" href="index.html">All Tools</a>
+      </div>
     </footer>
 
   </div>
@@ -499,6 +617,18 @@
       spacing: 20.0,
       showDots: true
     });
+  </script>
+
+  <!-- Language selector persistence -->
+  <script>
+    (function () {
+      var sel = document.getElementById('sde-lang-select');
+      var saved = localStorage.getItem('pt-lang');
+      if (saved) sel.value = saved;
+      sel.addEventListener('change', function () {
+        localStorage.setItem('pt-lang', this.value);
+      });
+    })();
   </script>
 
 </body>
