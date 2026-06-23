@@ -2,7 +2,10 @@
    ptSDE-ui.js — NFSU2 Save Editor by Piererra
    DOM interactions, event wiring, UI rendering
 
-   Depends on: ptSDE-core.js (must load first)
+   Depends on:
+     ptSDE-template.js  (must load first)
+     ptSDE-cars.js      (must load second)
+     ptSDE-core.js      (must load third)
 ============================================================ */
 
 (function () {
@@ -122,7 +125,6 @@
       return;
     }
 
-    // Update dropzone to show loaded filename
     const dropzone = $('sde-dropzone');
     const textEl   = $('sde-dropzone-text');
     if (dropzone) dropzone.classList.add('sde-dropzone--loaded');
@@ -140,9 +142,7 @@
 
     $('sde-input-name').value  = info.name;
     $('sde-input-money').value = info.money;
-
-    // Pre-fill clone name with current profile name
-    $('sde-clone-name').value = info.name;
+    $('sde-clone-name').value  = info.name;
 
     $('sde-editor-body').hidden = false;
     renderSlotCards();
@@ -196,29 +196,137 @@
   }
 
   /* ----------------------------------------------------------
-     PROFILE TOOLS
-     - New Save: always available (no file needed)
-     - Clone:    requires a loaded file
+     CREATE PROFILE MODAL
+
+     Flow:
+       1. User clicks "Create New Profile" button
+       2. Modal opens — name input, money input, car select
+       3. Car select has optgroups: Default, Standard Cars, Custom Cars
+       4. User fills in fields and clicks "Create & Download"
+       5. ptSDE.createProfile(name, money, carKey) called
+       6. Modal closes, toast shown
   ---------------------------------------------------------- */
 
-  function initProfileTools() {
-    // New Save — always visible, no loaded file required
-    $('sde-btn-new-save').addEventListener('click', () => {
-      const name = $('sde-new-name').value.trim().replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-      if (!name) { toast('Enter a profile name (1–7 alphanumeric).', 'err'); return; }
+  function buildCarSelect() {
+    const select = $('sde-modal-car');
+    if (!select || !window.ptSDE_CARS) return;
+
+    const { standard, custom } = window.ptSDE_CARS.getAll();
+
+    // Default option
+    const defOpt = document.createElement('option');
+    defOpt.value       = '';
+    defOpt.textContent = '🚗 Peugeot 206 (Default)';
+    select.appendChild(defOpt);
+
+    // Standard Cars group
+    const stdGroup = document.createElement('optgroup');
+    stdGroup.label = '── Standard Cars ──';
+    for (const car of standard) {
+      const opt = document.createElement('option');
+      opt.value       = car.key;
+      opt.textContent = car.name;
+      stdGroup.appendChild(opt);
+    }
+    select.appendChild(stdGroup);
+
+    // Custom / Story Cars group
+    const custGroup = document.createElement('optgroup');
+    custGroup.label = '── Custom / Story Cars ──';
+    for (const car of custom) {
+      const opt = document.createElement('option');
+      opt.value       = car.key;
+      opt.textContent = car.name;
+      custGroup.appendChild(opt);
+    }
+    select.appendChild(custGroup);
+  }
+
+  function openModal() {
+    const modal = $('sde-modal');
+    if (!modal) return;
+
+    // Reset fields
+    $('sde-modal-name').value  = '';
+    $('sde-modal-money').value = '0';
+    $('sde-modal-car').value   = '';
+
+    modal.classList.add('sde-modal--open');
+    $('sde-modal-name').focus();
+  }
+
+  function closeModal() {
+    const modal = $('sde-modal');
+    if (modal) modal.classList.remove('sde-modal--open');
+  }
+
+  function initModal() {
+    // Build car select options once on init
+    buildCarSelect();
+
+    // Open modal button
+    $('sde-btn-new-save').addEventListener('click', openModal);
+
+    // Close on backdrop click
+    $('sde-modal').addEventListener('click', (e) => {
+      if (e.target === $('sde-modal')) closeModal();
+    });
+
+    // Close on X button
+    $('sde-modal-close').addEventListener('click', closeModal);
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+
+    // Name input sanitize
+    $('sde-modal-name').addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 7).toUpperCase();
+    });
+
+    // Money input clamp
+    $('sde-modal-money').addEventListener('blur', (e) => {
+      const val = parseInt(e.target.value, 10);
+      if (isNaN(val) || val < 0) e.target.value = 0;
+      if (val > 2147483647)      e.target.value = 2147483647;
+    });
+
+    // Max money shortcut inside modal
+    $('sde-modal-max-money').addEventListener('click', () => {
+      $('sde-modal-money').value = 2147483647;
+    });
+
+    // Confirm — Create & Download
+    $('sde-modal-confirm').addEventListener('click', () => {
+      const name   = $('sde-modal-name').value.trim();
+      const money  = parseInt($('sde-modal-money').value, 10) || 0;
+      const carKey = $('sde-modal-car').value || null;
+
+      if (!name) {
+        toast('Enter a profile name (1–7 alphanumeric).', 'err');
+        $('sde-modal-name').focus();
+        return;
+      }
+
       try {
-        ptSDE.createNewSave(name);
-        toast(`New save "${name}" downloaded.`, 'ok');
+        ptSDE.createProfile(name, money, carKey);
+        const carLabel = carKey
+          ? (window.ptSDE_CARS?.findByKey(carKey)?.name || carKey)
+          : 'Peugeot 206 (Default)';
+        toast(`Profile "${name}" with ${carLabel} downloaded.`, 'ok');
+        closeModal();
       } catch (err) {
         toast('❌ ' + err.message, 'err');
       }
     });
+  }
 
-    $('sde-new-name').addEventListener('input', (e) => {
-      e.target.value = e.target.value.replace(/[^A-Za-z0-9]/g, '').slice(0, 7).toUpperCase();
-    });
+  /* ----------------------------------------------------------
+     CLONE
+  ---------------------------------------------------------- */
 
-    // Clone — requires loaded file
+  function initClone() {
     $('sde-btn-clone').addEventListener('click', () => {
       if (!ptSDE.isLoaded()) { toast('Load a save file first.', 'err'); return; }
       const name = $('sde-clone-name').value.trim().replace(/[^A-Za-z0-9]/g, '').toUpperCase();
@@ -291,7 +399,8 @@
     initLoadSection();
     initSlotGrid();
     initBasicEdits();
-    initProfileTools();
+    initModal();
+    initClone();
     initCheats();
     initDownload();
   });
