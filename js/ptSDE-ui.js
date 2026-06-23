@@ -299,9 +299,10 @@
 
     // Confirm — Create & Download
     $('sde-modal-confirm').addEventListener('click', () => {
-      const name   = $('sde-modal-name').value.trim();
-      const money  = parseInt($('sde-modal-money').value, 10) || 0;
-      const carKey = $('sde-modal-car').value || null;
+      const name         = $('sde-modal-name').value.trim();
+      const money        = parseInt($('sde-modal-money').value, 10) || 0;
+      const carKey       = $('sde-modal-car').value || null;
+      const unlockParts  = $('sde-modal-unlock-parts').checked;
 
       if (!name) {
         toast('Enter a profile name (1–7 alphanumeric).', 'err');
@@ -310,11 +311,12 @@
       }
 
       try {
-        ptSDE.createProfile(name, money, carKey);
+        ptSDE.createProfile(name, money, carKey, unlockParts);
         const carLabel = carKey
           ? (window.ptSDE_CARS?.findByKey(carKey)?.name || carKey)
           : 'Peugeot 206 (Default)';
-        toast(`Profile "${name}" with ${carLabel} downloaded.`, 'ok');
+        const partsLabel = unlockParts ? ' + All Parts Unlocked' : '';
+        toast(`Profile "${name}" — ${carLabel}${partsLabel} downloaded.`, 'ok');
         closeModal();
       } catch (err) {
         toast('❌ ' + err.message, 'err');
