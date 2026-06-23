@@ -182,6 +182,49 @@
       border-color: #ff4040;
       color: #ff4040;
     }
+
+    /* Unlock All Parts checkbox */
+    .sde-modal__checkbox {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      cursor: pointer;
+      user-select: none;
+      margin-top: .25rem;
+    }
+    .sde-modal__checkbox input[type="checkbox"] {
+      display: none;
+    }
+    .sde-modal__checkbox-mark {
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      border: 1px solid #7dff00;
+      border-radius: 3px;
+      background: rgba(7, 9, 16, 0.95);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background .15s;
+    }
+    .sde-modal__checkbox input:checked + .sde-modal__checkbox-mark {
+      background: #7dff00;
+    }
+    .sde-modal__checkbox input:checked + .sde-modal__checkbox-mark::after {
+      content: '';
+      display: block;
+      width: 4px;
+      height: 8px;
+      border: 2px solid #080A10;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translate(-1px, -1px);
+    }
+    .sde-modal__checkbox-label {
+      font-size: .78rem;
+      color: #CDD3E8;
+      letter-spacing: .04em;
+    }
   </style>
 </head>
 <body>
@@ -406,6 +449,13 @@
             <!-- Populated by ptSDE-ui.js → buildCarSelect() -->
           </select>
         </div>
+
+        <!-- Unlock All Parts -->
+        <label class="sde-modal__checkbox">
+          <input type="checkbox" id="sde-modal-unlock-parts" />
+          <span class="sde-modal__checkbox-mark"></span>
+          <span class="sde-modal__checkbox-label">Unlock All Parts</span>
+        </label>
 
       </div>
 
