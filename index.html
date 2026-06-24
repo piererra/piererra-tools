@@ -19,6 +19,7 @@
   <link rel="canonical" href="https://piererra-tools.vercel.app/" />
   <link rel="manifest" href="site.webmanifest" />
   <link rel="stylesheet" href="css/portal.css" />
+  <script src="js/pt-i18n.js"></script>
 </head>
 <body>
 
@@ -32,12 +33,12 @@
   ======================================================== -->
   <header class="pt-header">
     <div class="pt-header__glitch-wrap">
-      <h1 class="pt-header__title" data-text="PIERERRA TOOLS">PIERERRA TOOLS</h1>
-      <p class="pt-header__sub">// a personal toolbox</p>
+      <h1 class="pt-header__title" data-text="PIERERRA TOOLS" data-i18n="site.title">PIERERRA TOOLS</h1>
+      <p class="pt-header__sub" data-i18n="site.tagline">// a personal toolbox</p>
     </div>
     <div class="pt-lang" aria-label="Language selector">
       <span class="pt-lang__icon">&#9881;</span>
-      <select class="pt-lang__select" id="pt-lang-select" aria-label="Select language" title="Language / Region (UI language coming soon)">
+      <select class="pt-lang__select" id="pt-lang-select" aria-label="Select language" data-i18n-title="lang.selector.title" title="Language / Region">
         <optgroup label="── Common ──">
           <option value="en" selected>English</option>
           <option value="fr">Français</option>
@@ -155,7 +156,7 @@
   ======================================================== -->
   <main class="pt-main">
 
-    <p class="pt-main__label">// SELECT TOOL</p>
+    <p class="pt-main__label" data-i18n="portal.select">// SELECT TOOL</p>
 
     <div class="pt-grid">
 
@@ -163,7 +164,7 @@
       <a href="nfsu2-editor.html" class="pt-card pt-card--active">
         <span class="pt-card__id">01</span>
         <div class="pt-card__body">
-          <span class="pt-card__tag">GAME TOOL</span>
+          <span class="pt-card__tag" data-i18n="portal.game_tool">GAME TOOL</span>
           <h2 class="pt-card__name">NFSU2 Save Data Editor</h2>
           <p class="pt-card__desc">
             Edit Need for Speed Underground 2 save files. Max or nil car performance,
@@ -177,9 +178,9 @@
       <div class="pt-card pt-card--locked">
         <span class="pt-card__id">02</span>
         <div class="pt-card__body">
-          <span class="pt-card__tag">COMING SOON</span>
+          <span class="pt-card__tag" data-i18n="portal.coming_soon">COMING SOON</span>
           <h2 class="pt-card__name">???</h2>
-          <p class="pt-card__desc">Next tool in development.</p>
+          <p class="pt-card__desc" data-i18n="portal.next_tool">Next tool in development.</p>
         </div>
         <span class="pt-card__lock" aria-hidden="true">▪▪▪</span>
       </div>
@@ -188,9 +189,9 @@
       <div class="pt-card pt-card--locked">
         <span class="pt-card__id">03</span>
         <div class="pt-card__body">
-          <span class="pt-card__tag">COMING SOON</span>
+          <span class="pt-card__tag" data-i18n="portal.coming_soon">COMING SOON</span>
           <h2 class="pt-card__name">???</h2>
-          <p class="pt-card__desc">Next tool in development.</p>
+          <p class="pt-card__desc" data-i18n="portal.next_tool">Next tool in development.</p>
         </div>
         <span class="pt-card__lock" aria-hidden="true">▪▪▪</span>
       </div>
@@ -202,7 +203,7 @@
        FOOTER
   ======================================================== -->
   <footer class="pt-footer">
-    <span class="pt-footer__text">PIERERRA TOOLS &nbsp;·&nbsp; built by Piererra</span>
+    <span class="pt-footer__text" data-i18n="footer.built_by">PIERERRA TOOLS · built by Piererra</span>
     <div class="pt-footer__links">
       <a class="pt-footer__link" href="https://discord.com/users/1413503870373462070" target="_blank" rel="noopener noreferrer">Discord</a>
       <span class="pt-footer__sep">·</span>
@@ -210,16 +211,11 @@
     </div>
   </footer>
 
-  <!-- Language selector persistence -->
+  <!-- i18n init -->
   <script>
-    (function () {
-      var sel = document.getElementById('pt-lang-select');
-      var saved = localStorage.getItem('pt-lang');
-      if (saved) sel.value = saved;
-      sel.addEventListener('change', function () {
-        localStorage.setItem('pt-lang', this.value);
-      });
-    })();
+    document.addEventListener('DOMContentLoaded', function () {
+      ptI18n.init();
+    });
   </script>
 
 </body>
