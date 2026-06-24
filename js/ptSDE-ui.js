@@ -405,6 +405,15 @@
     initClone();
     initCheats();
     initDownload();
+
+    // Re-render slot cards when language changes so dynamic
+    // innerHTML strings (slot status, MAX/NIL/UNLOCK buttons) update instantly.
+    var langSel = document.getElementById('sde-lang-select');
+    if (langSel) {
+      langSel.addEventListener('change', function () {
+        if (ptSDE.isLoaded()) renderSlotCards();
+      });
+    }
   });
 
 }());
