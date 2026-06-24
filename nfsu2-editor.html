@@ -17,6 +17,7 @@
   <link rel="canonical" href="https://piererra-tools.vercel.app/nfsu2-editor.html" />
   <link rel="manifest" href="site.webmanifest" />
   <link rel="stylesheet" href="css/nfsu2-editor.css" />
+  <script src="js/pt-i18n.js"></script>
 
   <style>
     /* ── CREATE PROFILE MODAL ─────────────────────────────────── */
@@ -235,7 +236,7 @@
   <div class="sde-stripe" aria-hidden="true"></div>
 
   <nav class="sde-nav">
-    <a href="index.html" class="sde-nav__back">&#8592; Piererra Tools</a>
+    <a href="index.html" class="sde-nav__back" data-i18n="nav.back">&#8592; Piererra Tools</a>
     <span class="sde-nav__sep">/</span>
     <span class="sde-nav__current">NFSU2 Save Editor</span>
     <div class="sde-lang" aria-label="Language selector">
@@ -354,9 +355,9 @@
   <div class="sde-scroll">
 
     <header class="sde-header">
-      <p class="sde-header__game">NEED FOR SPEED UNDERGROUND 2</p>
-      <h1 class="sde-header__title">Save Editor</h1>
-      <p class="sde-header__by">by Piererra</p>
+      <p class="sde-header__game" data-i18n="editor.title">NEED FOR SPEED UNDERGROUND 2</p>
+      <h1 class="sde-header__title" data-i18n="editor.subtitle">Save Editor</h1>
+      <p class="sde-header__by" data-i18n="editor.by">by Piererra</p>
     </header>
 
     <main class="sde-main">
@@ -364,18 +365,16 @@
       <!-- CREATE NEW PROFILE — opens modal -->
       <section class="sde-section sde-section--first">
         <div class="sde-section__head">
-          <h2 class="sde-section__title">Create New Profile</h2>
-          <p class="sde-section__desc">
-            Generate a fresh NFSU2 save. Choose your profile name, starting money, and car.
-          </p>
+          <h2 class="sde-section__title" data-i18n="section.create">Create New Profile</h2>
+          <p class="sde-section__desc" data-i18n="label.create_hint">Generates a fresh NFSU2 save file ready to play.</p>
         </div>
         <button class="sde-btn sde-btn--lime" id="sde-btn-new-save">
-          + Create New Profile
+          + <span data-i18n="section.create">Create New Profile</span>
         </button>
       </section>
 
       <!-- DIVIDER -->
-      <div class="sde-divider"><span>or load an existing save</span></div>
+      <div class="sde-divider"><span data-i18n="drop.or_new">or load an existing save</span></div>
 
       <!-- LOAD FILE -->
       <section class="sde-section">
@@ -387,8 +386,8 @@
             <path d="M12 16V4M12 16l-4-4M12 16l4-4" stroke-linecap="round" stroke-linejoin="round"/>
             <path d="M4 20h16" stroke-linecap="round"/>
           </svg>
-          <p class="sde-dropzone__text" id="sde-dropzone-text">Drop your save file here</p>
-          <p class="sde-dropzone__sub">or click to browse</p>
+          <p class="sde-dropzone__text" id="sde-dropzone-text" data-i18n="drop.title">Drop your save file here</p>
+          <p class="sde-dropzone__sub" data-i18n="drop.or_browse">or click to browse</p>
           <input type="file" id="sde-file-input" class="sde-dropzone__input"
                  aria-label="Select save file" />
         </div>
@@ -396,28 +395,28 @@
         <label class="sde-checkbox">
           <input type="checkbox" id="sde-auto-backup" checked />
           <span class="sde-checkbox__mark"></span>
-          <span class="sde-checkbox__label">Auto-download backup on load</span>
+          <span class="sde-checkbox__label" data-i18n="drop.backup">Auto-download backup on load</span>
         </label>
 
         <div class="sde-infobar" id="sde-infobar" hidden>
           <div class="sde-infobar__item">
-            <span class="sde-infobar__key">PROFILE</span>
+            <span class="sde-infobar__key" data-i18n="info.profile">PROFILE</span>
             <span class="sde-infobar__val" id="sde-info-name">—</span>
           </div>
           <div class="sde-infobar__item">
-            <span class="sde-infobar__key">MONEY</span>
+            <span class="sde-infobar__key" data-i18n="info.money">MONEY</span>
             <span class="sde-infobar__val sde-infobar__val--gold" id="sde-info-money">—</span>
           </div>
           <div class="sde-infobar__item">
-            <span class="sde-infobar__key">CAR SLOTS</span>
+            <span class="sde-infobar__key" data-i18n="info.slots">Car Slots</span>
             <span class="sde-infobar__val" id="sde-info-slots">—</span>
           </div>
           <div class="sde-infobar__item">
-            <span class="sde-infobar__key">HEADER</span>
+            <span class="sde-infobar__key" data-i18n="info.header">HEADER</span>
             <span class="sde-infobar__val" id="sde-info-header">—</span>
           </div>
           <div class="sde-infobar__item">
-            <span class="sde-infobar__key">SIZE</span>
+            <span class="sde-infobar__key" data-i18n="info.size">SIZE</span>
             <span class="sde-infobar__val" id="sde-info-size">—</span>
           </div>
         </div>
@@ -428,18 +427,18 @@
 
         <!-- PROFILE -->
         <section class="sde-section">
-          <h2 class="sde-section__title">Profile</h2>
+          <h2 class="sde-section__title" data-i18n="section.profile">Profile</h2>
           <div class="sde-row">
             <div class="sde-field">
               <label class="sde-field__label" for="sde-input-name">
-                Name <span class="sde-field__hint">max 7 chars, alphanumeric</span>
+                Name <span class="sde-field__hint" data-i18n="label.max_chars">max 7 chars, alphanumeric</span>
               </label>
               <input type="text" id="sde-input-name" class="sde-input"
                      maxlength="7" placeholder="e.g. SPEEDER" autocomplete="off" />
             </div>
             <div class="sde-field">
               <label class="sde-field__label" for="sde-input-money">
-                Money <span class="sde-field__hint">max 2,147,483,647</span>
+                Money <span class="sde-field__hint" data-i18n="label.max_money">max 2,147,483,647</span>
               </label>
               <input type="number" id="sde-input-money" class="sde-input sde-input--gold"
                      min="0" max="2147483647" placeholder="e.g. 999999" />
@@ -450,8 +449,8 @@
         <!-- CAR SLOTS -->
         <section class="sde-section">
           <div class="sde-section__head">
-            <h2 class="sde-section__title">Car Slots</h2>
-            <p class="sde-section__desc">MAX fills all performance stats. NIL zeroes them.</p>
+            <h2 class="sde-section__title" data-i18n="section.car_slots">Car Slots</h2>
+            <p class="sde-section__desc" data-i18n="label.perf_hint">MAX fills all performance stats. NIL zeroes them.</p>
           </div>
           <div class="sde-slots" id="sde-slots-grid"></div>
         </section>
@@ -459,13 +458,13 @@
         <!-- CLONE SAVE -->
         <section class="sde-section">
           <div class="sde-section__head">
-            <h2 class="sde-section__title">Clone Save</h2>
-            <p class="sde-section__desc">Copy the loaded save under a new profile name.</p>
+            <h2 class="sde-section__title" data-i18n="section.clone">Clone Save</h2>
+            <p class="sde-section__desc" data-i18n="label.clone_hint">Copy the loaded save under a new profile name.</p>
           </div>
           <div class="sde-row sde-row--aligned">
             <div class="sde-field">
               <label class="sde-field__label" for="sde-clone-name">
-                New Name <span class="sde-field__hint">1–7 alphanumeric</span>
+                New Name <span class="sde-field__hint" data-i18n="label.name_hint">1–7 alphanumeric</span>
               </label>
               <input type="text" id="sde-clone-name" class="sde-input"
                      maxlength="7" placeholder="e.g. BACKUP1" autocomplete="off" />
@@ -479,13 +478,13 @@
         <!-- CHEATS -->
         <section class="sde-section">
           <div class="sde-section__head">
-            <h2 class="sde-section__title">Cheats</h2>
+            <h2 class="sde-section__title" data-i18n="section.cheats">Cheats</h2>
             <p class="sde-section__desc">One-click bulk operations applied to the save in memory.</p>
           </div>
           <div class="sde-cheat-grid">
-            <button class="sde-btn sde-btn--cheat" id="sde-btn-unlock-parts">Unlock All Parts</button>
-            <button class="sde-btn sde-btn--cheat" id="sde-btn-unlock-slots">Unlock All Car Slots</button>
-            <button class="sde-btn sde-btn--cheat sde-btn--cheat-gold" id="sde-btn-max-money">Max Money</button>
+            <button class="sde-btn sde-btn--cheat" id="sde-btn-unlock-parts" data-i18n="btn.unlock_parts">Unlock All Parts</button>
+            <button class="sde-btn sde-btn--cheat" id="sde-btn-unlock-slots" data-i18n="btn.unlock_slots">Unlock All Car Slots</button>
+            <button class="sde-btn sde-btn--cheat sde-btn--cheat-gold" id="sde-btn-max-money" data-i18n="btn.max_money">Max Money</button>
           </div>
         </section>
 
@@ -531,15 +530,15 @@
 
       <button class="sde-modal__close" id="sde-modal-close" aria-label="Close">✕</button>
 
-      <h2 class="sde-modal__title" id="sde-modal-title">Create New Profile</h2>
-      <p class="sde-modal__sub">Generates a fresh NFSU2 save file ready to play.</p>
+      <h2 class="sde-modal__title" id="sde-modal-title" data-i18n="section.create">Create New Profile</h2>
+      <p class="sde-modal__sub" data-i18n="label.create_hint">Generates a fresh NFSU2 save file ready to play.</p>
 
       <div class="sde-modal__fields">
 
         <!-- Profile Name -->
         <div class="sde-modal__field">
           <label for="sde-modal-name">
-            Profile Name <span>(1–7 alphanumeric, game limit)</span>
+            Profile Name <span data-i18n="label.name_hint">(1–7 alphanumeric, game limit)</span>
           </label>
           <input type="text" id="sde-modal-name"
                  maxlength="7" placeholder="e.g. SPEEDER" autocomplete="off" />
@@ -548,7 +547,7 @@
         <!-- Starting Money -->
         <div class="sde-modal__field">
           <label for="sde-modal-money">
-            Starting Money <span>(0 – 2,147,483,647)</span>
+            Starting Money <span data-i18n="label.money_range">(0 – 2,147,483,647)</span>
           </label>
           <div class="sde-modal__money-row">
             <input type="number" id="sde-modal-money" class="gold"
@@ -561,7 +560,7 @@
         <!-- Car Selection -->
         <div class="sde-modal__field">
           <label for="sde-modal-car">
-            Starting Car <span>(optional — default is Peugeot 206)</span>
+            Starting Car <span data-i18n="label.car_hint">(optional — default is Peugeot 206)</span>
           </label>
           <select id="sde-modal-car">
             <!-- Populated by ptSDE-ui.js → buildCarSelect() -->
@@ -572,15 +571,13 @@
         <label class="sde-modal__checkbox">
           <input type="checkbox" id="sde-modal-unlock-parts" />
           <span class="sde-modal__checkbox-mark"></span>
-          <span class="sde-modal__checkbox-label">Unlock All Parts</span>
+          <span class="sde-modal__checkbox-label" data-i18n="btn.unlock_parts">Unlock All Parts</span>
         </label>
 
       </div>
 
       <div class="sde-modal__actions">
-        <button class="sde-modal__confirm" id="sde-modal-confirm" type="button">
-          Create &amp; Download
-        </button>
+        <button class="sde-modal__confirm" id="sde-modal-confirm" type="button" data-i18n="btn.create_download">Create &amp; Download</button>
         <button class="sde-modal__cancel" id="sde-modal-cancel-btn"
                 type="button" onclick="document.getElementById('sde-modal').classList.remove('sde-modal--open')">
           Cancel
@@ -619,16 +616,11 @@
     });
   </script>
 
-  <!-- Language selector persistence -->
+  <!-- i18n init -->
   <script>
-    (function () {
-      var sel = document.getElementById('sde-lang-select');
-      var saved = localStorage.getItem('pt-lang');
-      if (saved) sel.value = saved;
-      sel.addEventListener('change', function () {
-        localStorage.setItem('pt-lang', this.value);
-      });
-    })();
+    document.addEventListener('DOMContentLoaded', function () {
+      ptI18n.init();
+    });
   </script>
 
 </body>
