@@ -38,7 +38,7 @@
     $('sde-info-slots').textContent = info.slots.inUse + ' / ' + info.slots.total;
 
     const headerEl = $('sde-info-header');
-    headerEl.textContent = info.headerOk ? 'VALID ✓' : 'INVALID ✗';
+    headerEl.textContent = info.headerOk ? ptI18n.t('info.valid') : ptI18n.t('info.invalid');
     headerEl.className   = info.headerOk
       ? 'sde-infobar__val sde-infobar__val--ok'
       : 'sde-infobar__val sde-infobar__val--err';
@@ -66,20 +66,20 @@
       card.innerHTML = `
         <div class="sde-slot__header">
           <span class="sde-slot__num">SLOT ${i + 1}</span>
-          <span class="sde-slot__dot" title="${inUse ? 'In use' : 'Empty'}"></span>
+          <span class="sde-slot__dot" title="${inUse ? ptI18n.t('slot.in_use') : ptI18n.t('slot.empty')}"></span>
         </div>
-        <span class="sde-slot__status">${inUse ? 'IN USE' : 'EMPTY'}</span>
+        <span class="sde-slot__status">${inUse ? ptI18n.t('slot.in_use') : ptI18n.t('slot.empty')}</span>
         <div class="sde-slot__controls">
           <button class="sde-slot__btn sde-slot__btn--max"
                   data-slot-action="max" data-slot="${i}"
-                  title="Max all performance stats">MAX PERF</button>
+                  title="${ptI18n.t('btn.max')}">${ptI18n.t('btn.max')} PERF</button>
           <button class="sde-slot__btn sde-slot__btn--nil"
                   data-slot-action="nil" data-slot="${i}"
-                  title="Zero all performance stats">NIL PERF</button>
+                  title="${ptI18n.t('btn.nil')}">${ptI18n.t('btn.nil')} PERF</button>
           <button class="sde-slot__btn sde-slot__btn--unlock"
                   data-slot-action="unlock" data-slot="${i}"
-                  title="Unlock this slot"
-                  ${inUse ? 'disabled' : ''}>UNLOCK</button>
+                  title="${ptI18n.t('btn.unlock_slot')}"
+                  ${inUse ? 'disabled' : ''}>${ptI18n.t('btn.unlock_slot').toUpperCase()}</button>
         </div>
       `;
 
@@ -99,13 +99,13 @@
 
       if (action === 'nil') {
         ptSDE.setSlotPerf(slot, 'nil');
-        toast(`Slot ${slot + 1} performance zeroed.`, 'ok');
+        toast(ptI18n.t('toast.slot_zeroed', {n: slot + 1}), 'ok');
       } else if (action === 'max') {
         ptSDE.setSlotPerf(slot, 'max');
-        toast(`Slot ${slot + 1} performance maxed.`, 'ok');
+        toast(ptI18n.t('toast.slot_maxed', {n: slot + 1}), 'ok');
       } else if (action === 'unlock') {
         ptSDE.unlockSlot(slot);
-        toast(`Slot ${slot + 1} unlocked.`, 'ok');
+        toast(ptI18n.t('toast.slot_unlocked', {n: slot + 1}), 'ok');
         renderSlotCards();
       }
     });
@@ -132,9 +132,9 @@
 
     if ($('sde-auto-backup')?.checked) {
       ptSDE.downloadBackup();
-      toast('Save loaded. Backup downloaded.', 'ok');
+      toast(ptI18n.t('toast.loaded_backup'), 'ok');
     } else {
-      toast('Save loaded: ' + file.name, 'ok');
+      toast(ptI18n.t('toast.loaded', {name: file.name}), 'ok');
     }
 
     const info = ptSDE.getSaveInfo();
@@ -305,7 +305,7 @@
       const unlockParts  = $('sde-modal-unlock-parts').checked;
 
       if (!name) {
-        toast('Enter a profile name (1–7 alphanumeric).', 'err');
+        toast(ptI18n.t('toast.err_name'), 'err');
         $('sde-modal-name').focus();
         return;
       }
@@ -330,12 +330,12 @@
 
   function initClone() {
     $('sde-btn-clone').addEventListener('click', () => {
-      if (!ptSDE.isLoaded()) { toast('Load a save file first.', 'err'); return; }
+      if (!ptSDE.isLoaded()) { toast(ptI18n.t('toast.load_save_first'), 'err'); return; }
       const name = $('sde-clone-name').value.trim().replace(/[^A-Za-z0-9]/g, '').toUpperCase();
-      if (!name) { toast('Enter a new profile name (1–7 alphanumeric).', 'err'); return; }
+      if (!name) { toast(ptI18n.t('toast.err_clone_name'), 'err'); return; }
       try {
         ptSDE.cloneSave(name);
-        toast(`Save cloned as "${name}" and downloaded.`, 'ok');
+        toast(ptI18n.t('toast.cloned', {name: name}), 'ok');
       } catch (err) {
         toast('❌ ' + err.message, 'err');
       }
@@ -353,19 +353,19 @@
   function initCheats() {
     $('sde-btn-unlock-parts').addEventListener('click', () => {
       ptSDE.unlockAllParts();
-      toast('All parts unlocked across all slots.', 'ok');
+      toast(ptI18n.t('toast.parts_unlocked'), 'ok');
     });
 
     $('sde-btn-unlock-slots').addEventListener('click', () => {
       ptSDE.unlockAllSlots();
-      toast('All 5 car slots unlocked.', 'ok');
+      toast(ptI18n.t('toast.slots_unlocked'), 'ok');
       renderSlotCards();
     });
 
     $('sde-btn-max-money').addEventListener('click', () => {
       ptSDE.maxMoney();
       $('sde-input-money').value = 2147483647;
-      toast('Money set to maximum.', 'ok');
+      toast(ptI18n.t('toast.money_maxed'), 'ok');
     });
   }
 
@@ -375,19 +375,19 @@
 
   function initDownload() {
     $('sde-btn-download').addEventListener('click', () => {
-      if (!ptSDE.isLoaded()) { toast('No save loaded.', 'err'); return; }
+      if (!ptSDE.isLoaded()) { toast(ptI18n.t('toast.no_save'), 'err'); return; }
       const name  = $('sde-input-name').value.trim();
       const money = parseInt($('sde-input-money').value, 10);
       if (name)          ptSDE.setName(name);
       if (!isNaN(money)) ptSDE.setMoney(money);
       ptSDE.downloadSave();
-      toast('Modified save downloaded.', 'ok');
+      toast(ptI18n.t('toast.save_downloaded'), 'ok');
     });
 
     $('sde-btn-backup').addEventListener('click', () => {
-      if (!ptSDE.isLoaded()) { toast('No save loaded.', 'err'); return; }
+      if (!ptSDE.isLoaded()) { toast(ptI18n.t('toast.no_save'), 'err'); return; }
       ptSDE.downloadBackup();
-      toast('Original backup (.bak) downloaded.', 'ok');
+      toast(ptI18n.t('toast.backup_downloaded'), 'ok');
     });
   }
 
