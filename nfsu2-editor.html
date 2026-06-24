@@ -594,7 +594,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
 
-  <!-- Load order matters: template → cars → core → ui -->
+  <!-- Load order: i18n first (in <head>), then template → cars → core → ui -->
   <script src="js/ptSDE-template.js"></script>
   <script src="js/ptSDE-cars.js"></script>
   <script src="js/ptSDE-core.js"></script>
@@ -616,7 +616,9 @@
     });
   </script>
 
-  <!-- i18n init -->
+  <!-- i18n init — runs after all scripts are parsed.
+       ptSDE-ui.js also uses DOMContentLoaded; both fire in script order,
+       so ptI18n.init() applies translations after the UI is ready. -->
   <script>
     document.addEventListener('DOMContentLoaded', function () {
       ptI18n.init();
