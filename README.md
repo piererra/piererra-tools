@@ -6,9 +6,10 @@
 [![Status: Active](https://img.shields.io/badge/Status-Active-00f5ff.svg)](#)
 [![Built with: Vanilla JS](https://img.shields.io/badge/Built%20with-Vanilla%20JS-ff2d78.svg)](#)
 [![Tools: 1 Active](https://img.shields.io/badge/Tools-1%20Active-7dff00.svg)](#tools)
-[![i18n: 30 Languages](https://img.shields.io/badge/i18n-30%20Languages-7dff00.svg)](#language-selector)
+[![i18n: 30 Languages](https://img.shields.io/badge/i18n-30%20Languages-7dff00.svg)](#i18n-system)
+[![Desktop: Python + tkinter](https://img.shields.io/badge/Desktop-Python%20%2B%20tkinter-7dff00.svg)](#desktop-app)
 
-Piererra Tools is a growing collection of browser-based utilities built entirely with vanilla HTML, CSS, and JavaScript — no frameworks, no build steps, no installs. Each tool runs fully client-side, meaning your data never leaves your device.
+Piererra Tools is a growing collection of browser-based utilities built entirely with vanilla HTML, CSS, and JavaScript — no frameworks, no build steps, no installs. Each tool runs fully client-side, meaning your data never leaves your device. A standalone desktop version of the NFSU2 Save Editor is also available as a compiled `.exe`.
 
 ---
 
@@ -17,6 +18,7 @@ Piererra Tools is a growing collection of browser-based utilities built entirely
 - [Overview](#overview)
 - [Tools](#tools)
 - [Project Structure](#project-structure)
+- [Desktop App](#desktop-app)
 - [i18n System](#i18n-system)
 - [Design System](#design-system)
 - [Open Source](#open-source)
@@ -36,6 +38,7 @@ Piererra Tools started as a personal toolbox and is now shared openly for anyone
 - Privacy-first — your files and data never touch a server
 - Mobile-friendly — works on any modern browser including Android
 - Multilingual — 30-language i18n system with localStorage persistence
+- Desktop-ready — Python desktop app compilable to a standalone `.exe`
 
 ---
 
@@ -43,9 +46,9 @@ Piererra Tools started as a personal toolbox and is now shared openly for anyone
 
 ### Tool 01 — NFSU2 Save Data Editor
 
-**Status:** Active · Fully tested · `nfsu2-editor.html`
+**Status:** Active · Fully tested · Web: `nfsu2-editor.html` · Desktop: `main.py` / `NFSU2-SaveEditor.exe`
 
-A full-featured browser-based save file editor for **Need for Speed Underground 2** (PC). Load, modify, and re-download your `.sav` file without any external software.
+A full-featured save file editor for **Need for Speed Underground 2** (PC). Available as a browser tool and as a standalone Windows desktop app.
 
 <details>
 <summary><strong>Full feature list & usage guide</strong></summary>
@@ -61,22 +64,28 @@ A full-featured browser-based save file editor for **Need for Speed Underground 
 | **Money Edit** | Set your in-game money to any value from 0 to 2,147,483,647 (signed 32-bit max). |
 | **Max Money (Cheat)** | One-click shortcut to set money to the maximum safe value. |
 | **Car Slot Viewer** | Visual grid showing all 5 car slots — whether each is in use or empty. |
-| **MAX Performance** | Fill all 8 performance upgrade blocks for a slot with `0xFF`, maxing every stat. |
-| **NIL Performance** | Zero all 8 performance upgrade blocks for a slot — useful for resetting tuning. |
-| **Unlock Slot** | Activate an empty car slot by flipping its in-use flag to `0x01`. |
+| **MAX Performance** | Fill all performance upgrade blocks for a slot, maxing every stat. |
+| **NIL Performance** | Zero all performance upgrade blocks for a slot — useful for resetting tuning. |
+| **Unlock Slot** | Activate an empty car slot by flipping its in-use flag. |
 | **Unlock All Car Slots** | Unlock all 5 slots in one click. |
-| **Unlock All Parts** | Write `0xFF` to all 8 parts blocks across all 5 slots — every upgrade available. |
-| **Clone Save** | Copy the currently loaded save to a new profile name. Useful for making alternate saves or backups. |
-| **Apply & Download** | Commits name + money edits from the UI into the buffer and downloads the modified `.sav`. |
-| **Download Backup** | Download the original unmodified file as `.bak` at any time. |
+| **Unlock All Parts** | Every upgrade available across all 5 slots. |
+| **Clone Save** | Copy the currently loaded save to a new profile name. |
+| **Apply & Save** | Commits name + money edits and writes the modified `.sav` to disk. |
+| **Download Backup** | Save the original unmodified file as `.bak` at any time. |
 
-#### How to use
+#### How to use (web)
 
 1. Open `nfsu2-editor.html` in any modern browser.
-2. **To create a new save:** Enter a profile name in the *Create New Save* section and click **Create & Download**. Place the downloaded file in `%LOCALAPPDATA%\NFS Underground 2\<Name>\<Name>` (no extension).
-3. **To edit an existing save:** Drop your save file onto the dropzone or click to browse. The editor validates the header and displays your profile info.
-4. Make your edits using the available sections.
-5. Click **Apply All & Download** to save your changes.
+2. **Create a new save:** Enter a profile name in the *Create New Save* section and click **Create & Download**.
+3. **Edit an existing save:** Drop your save file onto the dropzone or click to browse.
+4. Make your edits and click **Apply All & Download**.
+
+#### How to use (desktop)
+
+1. Run `NFSU2-SaveEditor.exe` (or `python main.py`).
+2. Click **Load Save File** to open your `.sav`.
+3. Edit name, money, slots, or use the cheat buttons.
+4. Click **Apply & Save** to write the modified file to disk.
 
 #### Save file path (Windows)
 
@@ -89,12 +98,12 @@ The save file has no extension — just the profile name as the filename.
 #### Technical notes
 
 - Save files are validated by checking the 4-byte magic header (`32 30 43 4D` / ASCII `20CM`) and verifying that the low 16 bits of the file size stored at offset `0x0004` match the actual file size.
-- Profile name is stored as null-terminated ASCII at a fixed offset (`0xD225`). Reads up to 16 bytes to handle non-standard external saves, but always writes at most 7 characters.
+- Profile name is stored as null-terminated ASCII at offset `0xD225`. Reads up to 16 bytes, writes at most 7 characters.
 - Money is a signed 32-bit little-endian integer at offset `0xA16A`.
 - Car slots begin at `0x5AEC`, each `0x7F2` bytes, 5 total.
 - Performance data: 8 blocks of `0x40` bytes per slot.
 - Parts data: 8 blocks of `0x10` bytes per slot starting at relative offset `0x0234`.
-- Car injection patches use **slot-relative offsets** (`0` to `0x7F1`), not absolute file offsets — so any patch can be injected into any of the 5 slots.
+- Car injection patches use slot-relative offsets — safe to apply to any of the 5 slots.
 
 </details>
 
@@ -112,11 +121,12 @@ The save file has no extension — just the profile name as the filename.
 
 ## Project Structure
 
+### Web version
+
 ```
 piererra-tools/
 │
 ├── index.html                  # Portal homepage — tool card grid
-│
 ├── nfsu2-editor.html           # NFSU2 Save Editor page
 │
 ├── css/
@@ -124,83 +134,173 @@ piererra-tools/
 │   └── nfsu2-editor.css        # NFSU2 editor theme + language selector styles
 │
 ├── js/
-│   ├── pt-i18n.js              # i18n system — 30 languages, 85 keys, t() + apply() + init()
+│   ├── pt-i18n.js              # i18n system — 30 languages, 85 keys
 │   ├── ptSDE-core.js           # Binary engine — all save file read/write logic
-│   ├── ptSDE-ui.js             # DOM wiring — events, rendering, toast notifications (i18n-wired)
-│   ├── ptSDE-cars.js           # Car list data for the new-save car selector
-│   └── ptSDE-template.js       # Base64-encoded blank NFSU2 save (used for new-save creation)
+│   ├── ptSDE-ui.js             # DOM wiring — events, rendering, toasts (i18n-wired)
+│   ├── ptSDE-cars.js           # Car list data (49 cars)
+│   └── ptSDE-template.js       # Base64-encoded blank NFSU2 save
 │
-├── robots.txt                  # Search engine crawl rules
-├── sitemap.xml                 # XML sitemap for SEO
-├── site.webmanifest            # PWA manifest
-└── googlec52b3a73db4c4f44.html # Google Search Console verification
+├── robots.txt
+├── sitemap.xml
+├── site.webmanifest
+└── googlec52b3a73db4c4f44.html
+```
+
+### Desktop version
+
+```
+piererra-tools-desktop/
+│
+├── main.py                     # Entry point — run directly or compile with PyInstaller
+├── build.bat                   # One-click build script → dist\NFSU2-SaveEditor.exe
+│
+└── nfsu2_editor/
+    ├── __init__.py             # Python package marker
+    ├── core.py                 # Binary engine — Python port of ptSDE-core.js
+    ├── cars.py                 # Car database — Python port of ptSDE-cars.js (49 cars)
+    ├── template.py             # Base64 blank save — Python port of ptSDE-template.js
+    └── app.py                  # tkinter GUI — 15 languages, NFSU2 dark-lime theme
 ```
 
 <details>
-<summary><strong>Detailed file descriptions</strong></summary>
-
-#### `index.html`
-The portal entry point. Renders a cyberpunk-themed card grid using `portal.css`. Cards link to each tool or show a locked state for upcoming tools. Includes the language selector widget in the header (75+ languages, grouped by region) and Discord/GitHub links in the footer. Calls `ptI18n.init()` on `DOMContentLoaded`.
-
-#### `nfsu2-editor.html`
-The NFSU2 Save Editor page. Pulls in the Vanta.js NET animation (via CDN) for a full-page animated background. Loads the scripts in dependency order: `pt-i18n.js` → `ptSDE-template.js` → `ptSDE-cars.js` → `ptSDE-core.js` → `ptSDE-ui.js`. Includes the language selector in the nav bar and Discord/GitHub/All Tools links in the footer.
-
-#### `css/portal.css`
-Cyberpunk design system for the portal:
-- **Palette:** deep black (`#0a0a0f`), cyan (`#00f5ff`), magenta (`#ff2d78`)
-- **Font:** system monospace stack — no external font requests
-- Glitch title animation via CSS pseudo-elements
-- CSS scanlines via `repeating-linear-gradient`
-- Responsive card grid
-- Language selector styles (`.pt-lang`, `.pt-lang__select`) and footer link styles
-
-#### `css/nfsu2-editor.css`
-Need for Speed Underground 2 themed editor UI:
-- **Palette:** near-black (`#080A10`), lime (`#7DFF00`), gold (`#E0B030`), blue (`#4A9EFF`), red (`#FF4040`)
-- Semi-transparent panels over Vanta.js animated background
-- Scrollable content wrapper sitting above the fixed Vanta canvas (z-index layering)
-- Slot cards, dropzone, infobar, toast notification, and cheat button components
-- Language selector styles (`.sde-lang`, `.sde-lang__select`) and footer link styles
+<summary><strong>Detailed file descriptions (web)</strong></summary>
 
 #### `js/pt-i18n.js`
-The i18n system. A self-contained IIFE exposing `window.ptI18n` with:
-- **85 translation keys** covering all user-visible strings on both pages
-- **30 languages:** EN, FR, ES, DE, PT, RU, ZH-Hans, ZH-Hant, JA, KO, AR, HI, IT, NL, PL, TR, ID, VI, TH, UK, SV, DA, FI, NO, CS, HU, RO, EL, MS, FA
-- `t(key, vars)` — translate a key with optional `{variable}` interpolation
-- `apply(langCode)` — DOM walker that fills `data-i18n`, `data-i18n-placeholder`, `data-i18n-title`, `data-i18n-label` attributes
-- `init()` — reads `localStorage` (`pt-lang` key), syncs both page selectors (`pt-lang-select` / `sde-lang-select`), applies translations, and attaches change listeners
-- Updates `<html lang>` attribute on every language switch for proper RTL/LTR support
+Self-contained IIFE exposing `window.ptI18n` with 85 translation keys across 30 languages. `t(key, vars)` for lookup, `apply(langCode)` for DOM walking, `init()` for page boot. Updates `<html lang>` on every switch for RTL/LTR support.
 
 #### `js/ptSDE-core.js`
-The binary read/write engine. Exposes `window.ptSDE` with the full public API. Self-contained IIFE — no external dependencies. Handles:
-- `ArrayBuffer` management (working copy + original for backup)
-- Header validation
-- Fixed-offset name/money read+write
-- Slot in-use flag detection and forcing
-- Performance and parts block fill (`0xFF` / `0x00`)
-- Car injection (slot-relative offset patching)
-- Car extraction (exports non-zero chunks as patch array)
-- New save creation (decodes the base64 template, writes name, triggers download)
-- Save cloning (deep-copies buffer, renames, triggers download)
-- Browser download via `Blob` + `URL.createObjectURL`
+Binary read/write engine. Exposes `window.ptSDE`. Handles header validation, name/money read+write, slot management, performance and parts blocks, car injection, new save creation from base64 template, and save cloning. Browser download via `Blob` + `URL.createObjectURL`.
 
 #### `js/ptSDE-ui.js`
-The DOM layer. Wires all UI elements to `ptSDE` core methods. All user-visible strings are served via `ptI18n.t()` — no hardcoded English strings remain. Handles:
-- Drag-and-drop + click-to-browse file loading
-- Auto-backup on load
-- Infobar update after load (name, money, slot count, header status, file size)
-- Slot card rendering and per-slot button delegation (all text i18n-translated)
-- Profile name sanitization (auto-uppercase, strip non-alphanumeric)
-- Cheat button handlers
-- Toast notification system with auto-dismiss (all messages i18n-translated)
+DOM layer wiring all UI elements to `ptSDE` methods. All user-visible strings use `ptI18n.t()` — no hardcoded English strings.
 
 #### `js/ptSDE-cars.js`
-Car list data used to populate the car selector in the Create New Profile modal. Referenced by `ptSDE-ui.js` via `buildCarSelect()`.
+49-car database (27 standard + 22 custom/story). Each entry contains binary patch blocks keyed by slot-relative offsets.
 
 #### `js/ptSDE-template.js`
-A single `window.ptSDE_TEMPLATE = "..."` assignment containing a base64-encoded blank NFSU2 save file (~73KB raw). Used by `ptSDE-core.js` to construct new saves from scratch. Generated once from a real clean save.
+Single base64 assignment `window.ptSDE_TEMPLATE`. Decodes to a 54,966-byte blank NFSU2 save with valid `20CM` header and size checksum.
 
 </details>
+
+<details>
+<summary><strong>Detailed file descriptions (desktop)</strong></summary>
+
+#### `nfsu2_editor/core.py`
+Python port of `ptSDE-core.js`. `SaveEditor` class with full public API — same binary offsets, same logic. Uses Python `struct` and `bytearray`. No external dependencies.
+
+#### `nfsu2_editor/cars.py`
+Python port of `ptSDE-cars.js`. All 49 cars with hex block data. `get_all()`, `find_car_by_key(key)`, `get_car_names()`.
+
+#### `nfsu2_editor/template.py`
+Python port of `ptSDE-template.js`. `TEMPLATE_B64` string — same 54,966-byte blank save. Stored as implicit string concatenation for GitHub compatibility.
+
+#### `nfsu2_editor/app.py`
+Full tkinter GUI. NFSU2 dark-lime theme matching the web version. 15-language i18n system. Sections: load/backup, info bar, profile edit, car slots (5 cards with MAX/NIL/UNLOCK), cheats, clone, create new profile (with 49-car dropdown). Toast notification system. Language switcher in header.
+
+</details>
+
+---
+
+## Desktop App
+
+The desktop version is a standalone Windows `.exe` built from Python + tkinter. It replicates all features of the web editor with a native desktop UI — no browser needed.
+
+### Requirements
+
+- Windows 10 or later (or Wine/Winlator on Android)
+- Python 3.10+ (only needed to build the `.exe`, not to run it)
+- PyInstaller (installed automatically by `build.bat`)
+
+### Building the .exe
+
+**Step 1 — Install Python**
+
+Download from [python.org](https://www.python.org/downloads/). During install, check **"Add Python to PATH"**.
+
+**Step 2 — Get the files**
+
+Your desktop project folder must look like this:
+
+```
+piererra-tools-desktop/
+├── main.py
+├── build.bat
+└── nfsu2_editor/
+    ├── __init__.py
+    ├── core.py
+    ├── cars.py
+    ├── template.py
+    └── app.py
+```
+
+**Step 3 — Run the build**
+
+Double-click `build.bat`. It will:
+
+1. Check Python is installed
+2. Auto-install PyInstaller if missing (`pip install pyinstaller`)
+3. Clean any previous build output
+4. Run PyInstaller with the correct flags
+5. Open the `dist\` folder when done
+
+**Step 4 — Get your .exe**
+
+```
+dist\
+└── NFSU2-SaveEditor.exe   ← your standalone executable
+```
+
+The `.exe` is fully self-contained — no Python installation needed on the target machine. File size is approximately 8–12 MB.
+
+### Manual build command
+
+If you prefer to run it yourself without `build.bat`:
+
+```bat
+pyinstaller --onefile --windowed --name "NFSU2-SaveEditor" --add-data "nfsu2_editor;nfsu2_editor" main.py
+```
+
+| Flag | Purpose |
+|---|---|
+| `--onefile` | Bundle everything into a single `.exe` |
+| `--windowed` | No black console window behind the GUI |
+| `--name` | Output filename |
+| `--add-data` | Include the `nfsu2_editor` package inside the bundle |
+
+### Running without compiling
+
+You can also run the app directly with Python (no build needed):
+
+```bash
+python main.py
+```
+
+### Running on Android (Winlator)
+
+The compiled `.exe` can be run inside **Winlator** (Android Wine environment):
+
+1. Copy `NFSU2-SaveEditor.exe` to your Winlator container
+2. Open it via the Winlator file manager or terminal
+3. The tkinter GUI should render via Wine's GDI layer
+
+> **Note:** Performance may vary depending on Box64 translation overhead. File picker dialogs work under Wine but may look different from native Windows.
+
+### Desktop i18n (15 languages)
+
+The desktop app includes its own translation system in `app.py` (separate from the web `pt-i18n.js`):
+
+| Code | Language | Code | Language |
+|---|---|---|---|
+| `en` | English | `ko` | 한국어 |
+| `fr` | Français | `ar` | العربية |
+| `es` | Español | `it` | Italiano |
+| `de` | Deutsch | `tr` | Türkçe |
+| `pt` | Português | `id` | Bahasa Indonesia |
+| `ru` | Русский | `pl` | Polski |
+| `zh` | 中文 (简体) | `nl` | Nederlands |
+| `ja` | 日本語 | | |
+
+Switching languages in the header dropdown rebuilds the UI instantly. The selection is not currently persisted between sessions (planned for a future update).
 
 ---
 
@@ -267,13 +367,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 ### Language selector widget
 
-The language selector dropdown (75+ languages grouped by region) is present on both pages. Selecting a language:
-1. Saves the choice to `localStorage` under the key `pt-lang`
-2. Calls `ptI18n.apply(langCode)` to re-translate all DOM elements instantly
-3. Updates `<html lang>` for correct RTL/LTR rendering (Arabic, Persian, Hebrew, Urdu, etc.)
-4. Persists across both pages and page reloads
-
-No flag emoji are used in the selector to ensure full GitHub push compatibility (avoids bidirectional Unicode warnings).
+The language selector (75+ languages, grouped by region) is present on both pages. Selecting a language saves the choice to `localStorage` under `pt-lang`, re-translates all DOM elements instantly, updates `<html lang>` for RTL/LTR rendering, and persists across pages and reloads. No flag emoji are used — avoids GitHub bidirectional Unicode warnings.
 
 ---
 
@@ -297,15 +391,15 @@ No flag emoji are used in the selector to ensure full GitHub push compatibility 
 </details>
 
 <details>
-<summary><strong>NFSU2 Editor theme tokens (nfsu2-editor.css)</strong></summary>
+<summary><strong>NFSU2 Editor theme tokens (nfsu2-editor.css + app.py)</strong></summary>
 
 ```css
---bg-deep:        #080A10                   /* page background */
---bg-panel:       rgba(12, 15, 24, 0.82)   /* transparent panels over Vanta */
+--bg-deep:        #080A10
+--bg-panel:       rgba(12, 15, 24, 0.82)
 --bg-panel-solid: #0C0F18
 --bg-card:        rgba(16, 20, 32, 0.88)
 --bg-input:       rgba(7, 9, 16, 0.95)
---lime:           #7DFF00   /* primary accent (NFS green) */
+--lime:           #7DFF00   /* primary accent */
 --gold:           #E0B030   /* money / gold accent */
 --blue:           #4A9EFF   /* info accent */
 --red:            #FF4040   /* danger / nil accent */
@@ -313,7 +407,7 @@ No flag emoji are used in the selector to ensure full GitHub push compatibility 
 --text-muted:     #424B68
 ```
 
-Vanta.js NET config: `color: 0x7dff00`, `backgroundColor: 0x080a10`, `points: 8`, `maxDistance: 20`, `spacing: 20`.
+The same palette is replicated in `app.py`'s `Theme` class for the desktop app.
 
 </details>
 
@@ -351,34 +445,38 @@ SOFTWARE.
 
 ## Contributing
 
-Contributions are welcome. Because this project is vanilla HTML/CSS/JS with no build toolchain, getting started is as simple as opening the files.
+Contributions are welcome. The web version is vanilla HTML/CSS/JS with no build toolchain — open the `.html` files directly in a browser to test. The desktop version requires Python 3.10+.
 
 <details>
 <summary><strong>How to contribute</strong></summary>
 
 1. **Fork** this repository on GitHub.
 2. **Clone** your fork locally (or edit directly on GitHub).
-3. Make your changes — no build step needed. Open the `.html` files directly in a browser to test.
-4. **Submit a pull request** with a clear description of what you changed and why.
+3. Make your changes and test them.
+4. **Submit a pull request** with a clear description.
 
 #### Guidelines
 
-- Keep it vanilla — no frameworks, no npm, no bundlers.
-- Client-side only — tools should not require a server or make network requests for core functionality.
-- Match the existing style in each CSS file (use the defined CSS variables, don't hardcode colors).
-- Keep JS in IIFEs or modules to avoid polluting `window` (the exception being intentional exports like `window.ptSDE` and `window.ptI18n`).
-- Comment your code — especially for binary offset logic.
-- For new translatable strings, add them to `pt-i18n.js` with all 30 language entries before wiring the `data-i18n` attribute.
+- Web: keep it vanilla — no frameworks, no npm, no bundlers.
+- Desktop: no external pip dependencies — stdlib only (`tkinter`, `struct`, `base64`, `re`, `os`).
+- Client-side / file-only — tools must not make network requests for core functionality.
+- Match the existing CSS variables and `Theme` class — no hardcoded colours.
+- For new translatable strings, add to both `pt-i18n.js` (web, 30 languages) and `app.py` `STRINGS` dict (desktop, 15 languages).
 
-#### Adding a new language to pt-i18n.js
+#### Adding a new language
 
-1. Add the language code to the `langs` array.
-2. Add a translation entry for every key in `dict` — use the `en` value as a reference.
-3. Add the language as an `<option>` in both `index.html` and `nfsu2-editor.html` selectors.
+**Web (`pt-i18n.js`):**
+1. Add the code to the `langs` array.
+2. Add a translation for every key in `dict`.
+3. Add an `<option>` in both HTML selectors.
+
+**Desktop (`app.py`):**
+1. Add the code + display name to `LANGS`.
+2. Add a translation for every key in `STRINGS`.
 
 #### Suggesting a new tool
 
-Open a GitHub Issue with the label `tool idea` and describe what the tool does, why it needs to be browser-based, and any similar existing tools.
+Open a GitHub Issue with the label `tool idea` — describe what it does, why it should be browser-based or desktop, and any similar existing tools.
 
 </details>
 
@@ -387,14 +485,17 @@ Open a GitHub Issue with the label `tool idea` and describe what the tool does, 
 ## Roadmap
 
 - [x] Portal homepage with tool card grid
-- [x] NFSU2 Save Data Editor (create, load, edit, clone, cheat)
+- [x] NFSU2 Save Data Editor — web version (create, load, edit, clone, cheat)
 - [x] Language selector widget (75+ languages, localStorage persistence)
-- [x] Full i18n system — `pt-i18n.js` with 30 languages, 85 keys
+- [x] Full web i18n — `pt-i18n.js` with 30 languages, 85 keys
 - [x] All toast & UI strings translated in `ptSDE-ui.js`
 - [x] Discord & GitHub links in footers
+- [x] Desktop app — Python + tkinter, 15 languages, NFSU2 theme
+- [x] Desktop app — PyInstaller `.exe` build via `build.bat`
 - [ ] Tool 02 — TBD
 - [ ] Tool 03 — TBD
-- [ ] Expand i18n to 50+ languages
+- [ ] Expand web i18n to 50+ languages
+- [ ] Persist desktop language selection between sessions
 - [ ] Light mode toggle (optional)
 - [ ] Keyboard navigation improvements
 
