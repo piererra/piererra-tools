@@ -48,7 +48,6 @@
     $('mwe-info-name').textContent     = snapshot.name     || '—';
     $('mwe-info-money').textContent    = '$' + snapshot.money.toLocaleString();
     $('mwe-info-bounty').textContent   = snapshot.pursuitBounty.toLocaleString();
-    $('mwe-info-platform').textContent = ptMWE.platform.toUpperCase();
     $('mwe-info-size').textContent     = (fileSize / 1024).toFixed(1) + ' KB';
     $('mwe-info-hash').textContent     = snapshot.hashHex.slice(0, 8) + '…';
     $('mwe-infobar').hidden = false;
@@ -362,11 +361,10 @@
   function handleFile(file) {
     if (!file) return;
 
-    var platform = ptMWE.platform;
-    var reader   = new FileReader();
+    var reader = new FileReader();
 
     reader.onload = function (e) {
-      var result = mweLoadFile(e.target.result, platform, file.name);
+      var result = mweLoadFile(e.target.result, 'pc', file.name);
 
       if (!result.ok) {
         toast('Error: ' + result.error, 'err');
@@ -442,23 +440,6 @@
       var file = e.dataTransfer.files[0];
       if (file) handleFile(file);
     });
-  }
-
-  /* ── PLATFORM TOGGLE ──────────────────────────────────── */
-
-  function initPlatformToggle() {
-    var btnPC  = $('mwe-platform-pc');
-    var btnPS2 = $('mwe-platform-ps2');
-    if (!btnPC || !btnPS2) return;
-
-    function setActivePlatform(platform) {
-      ptMWE.platform = platform;
-      btnPC.classList.toggle('mwe-platform-btn--active',  platform === 'pc');
-      btnPS2.classList.toggle('mwe-platform-btn--active', platform === 'ps2');
-    }
-
-    btnPC.addEventListener('click',  function () { setActivePlatform('pc'); });
-    btnPS2.addEventListener('click', function () { setActivePlatform('ps2'); });
   }
 
   /* ── PROFILE FIELD EVENTS ─────────────────────────────── */
@@ -541,7 +522,6 @@
     $ = function (id) { return document.getElementById(id); };
 
     initDropzone();
-    initPlatformToggle();
     initProfileFields();
     initDownload();
     initLangSelect();
