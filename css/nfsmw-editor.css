@@ -256,7 +256,7 @@ code {
   font-weight: 700;
 }
 
-/* ── PLATFORM SELECTOR ──────────────────────────────────── */
+/* ── PLATFORM LABEL (PC only) ───────────────────────────── */
 .mwe-platform-row {
   display: flex;
   align-items: center;
@@ -269,34 +269,16 @@ code {
   color: var(--text-muted);
 }
 
-.mwe-platform-row__btns {
-  display: flex;
-  gap: 0.4rem;
-}
-
-.mwe-platform-btn {
+.mwe-platform-row__val {
   font-family: var(--font-display);
   font-size: 0.68rem;
   font-weight: bold;
-  letter-spacing: 0.12em;
-  padding: 0.3rem 0.9rem;
-  border: 1px solid var(--border-lit);
-  border-radius: var(--radius);
-  background: var(--bg-input);
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background var(--ease), border-color var(--ease), color var(--ease);
-}
-
-.mwe-platform-btn--active {
-  background: var(--orange-dim);
-  border-color: var(--orange);
+  letter-spacing: 0.16em;
   color: var(--orange);
-}
-
-.mwe-platform-btn:hover:not(.mwe-platform-btn--active) {
-  border-color: var(--border-lit);
-  color: var(--text-main);
+  background: var(--orange-dim);
+  border: 1px solid var(--orange);
+  border-radius: var(--radius);
+  padding: 0.3rem 0.9rem;
 }
 
 /* ── CHECKBOX ───────────────────────────────────────────── */
