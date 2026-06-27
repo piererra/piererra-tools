@@ -115,7 +115,7 @@ code {
     transparent 0%,
     var(--orange) 30%,
     #fff 50%,
-    var(--lime) 70%,
+    var(--orange) 70%,
     transparent 100%
   );
   box-shadow: 0 0 16px var(--orange-glow);
@@ -137,7 +137,7 @@ code {
 }
 
 .mwe-nav__back {
-  color: var(--lime);
+  color: var(--orange);
   text-decoration: none;
   transition: opacity var(--ease);
 }
@@ -307,8 +307,8 @@ code {
 }
 
 .mwe-checkbox input:checked + .mwe-checkbox__mark {
-  background: var(--lime);
-  border-color: var(--lime);
+  background: var(--orange);
+  border-color: var(--orange);
 }
 
 .mwe-checkbox input:checked + .mwe-checkbox__mark::after {
@@ -356,7 +356,7 @@ code {
 .mwe-infobar__val--gold   { color: var(--gold); }
 .mwe-infobar__val--orange { color: var(--orange); }
 .mwe-infobar__val--mono   { font-size: 0.68rem; opacity: 0.6; letter-spacing: 0.04em; }
-.mwe-infobar__val--ok     { color: var(--lime); }
+.mwe-infobar__val--ok     { color: var(--orange); }
 .mwe-infobar__val--err    { color: var(--red); }
 
 /* ── DROPZONE ───────────────────────────────────────────── */
@@ -590,8 +590,8 @@ code {
   font-size: 0.72rem;
 }
 .mwe-btn--ghost:hover:not(:disabled) {
-  border-color: var(--lime);
-  color: var(--lime);
+  border-color: var(--orange);
+  color: var(--orange);
 }
 
 /* ── ACTION ROW ─────────────────────────────────────────── */
@@ -635,7 +635,7 @@ code {
   transform: translateX(-50%) translateY(0);
 }
 
-.mwe-toast--ok   { border-left: 3px solid var(--lime);   color: var(--lime); }
+.mwe-toast--ok   { border-left: 3px solid var(--orange); color: var(--orange); }
 .mwe-toast--err  { border-left: 3px solid var(--red);    color: var(--red); }
 .mwe-toast--info { border-left: 3px solid var(--orange); color: var(--orange); }
 
