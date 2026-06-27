@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>NFSMW Save Editor — Need for Speed Most Wanted 2005 | Piererra Tools</title>
+  <meta name="description" content="Free browser-based save editor for Need for Speed Most Wanted 2005. Edit money, bounty, infractions, pursuit stats, per-car records — PC and PS2 supported. No install needed." />
+  <meta name="keywords" content="NFSMW save editor, Need for Speed Most Wanted save editor, NFS Most Wanted 2005 cheat, NFSMW save file, NFS save editor online, nfsmw money cheat, nfsmw bounty cheat, nfsmw ps2 save editor" />
+  <meta name="author" content="Piererra" />
+
+  <meta property="og:title" content="NFSMW Save Editor — Piererra Tools" />
+  <meta property="og:description" content="Edit your Need for Speed Most Wanted 2005 save file in the browser. Set money, bounty, infractions, pursuit stats — PC and PS2. Free, no install required." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://piererra-tools.vercel.app/nfsmw-editor.html" />
+
+  <link rel="canonical" href="https://piererra-tools.vercel.app/nfsmw-editor.html" />
+  <link rel="manifest" href="site.webmanifest" />
+  <link rel="stylesheet" href="css/nfsmw-editor.css" />
+  <script src="js/pt-i18n.js"></script>
+</head>
+<body>
+
+  <!-- ========================================================
+       VANTA BACKGROUND — cyberpunk net effect (CSS-driven)
+  ======================================================== -->
+  <div id="mwe-vanta-bg" aria-hidden="true"></div>
+
+  <div class="mwe-stripe" aria-hidden="true"></div>
+
+  <!-- ========================================================
+       NAV
+  ======================================================== -->
+  <nav class="mwe-nav">
+    <a href="index.html" class="mwe-nav__back" data-i18n="nav.back">&#8592; Piererra Tools</a>
+    <span class="mwe-nav__sep">/</span>
+    <span class="mwe-nav__current">NFSMW Save Editor</span>
+    <div class="mwe-lang" aria-label="Language selector">
+      <span class="mwe-lang__icon">&#9881;</span>
+      <select class="mwe-lang__select" id="mwe-lang-select" aria-label="Select language" title="Language / Region">
+        <optgroup label="── Common ──">
+          <option value="en" selected>English</option>
+          <option value="fr">Français</option>
+          <option value="es">Español</option>
+          <option value="de">Deutsch</option>
+          <option value="pt">Português</option>
+          <option value="ru">Русский</option>
+          <option value="zh-hans">中文 (简体)</option>
+          <option value="zh-hant">中文 (繁體)</option>
+          <option value="ja">日本語</option>
+          <option value="ko">한국어</option>
+          <option value="ar">العربية</option>
+          <option value="hi">हिन्दी</option>
+          <option value="it">Italiano</option>
+          <option value="nl">Nederlands</option>
+          <option value="pl">Polski</option>
+          <option value="tr">Türkçe</option>
+          <option value="id">Bahasa Indonesia</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="th">ภาษาไทย</option>
+          <option value="uk">Українська</option>
+        </optgroup>
+        <optgroup label="── Europe ──">
+          <option value="sq">Shqip</option>
+          <option value="hy">Հայերեն</option>
+          <option value="az">Azərbaycanca</option>
+          <option value="eu">Euskara</option>
+          <option value="be">Беларуская</option>
+          <option value="bs">Bosanski</option>
+          <option value="bg">Български</option>
+          <option value="ca">Català</option>
+          <option value="hr">Hrvatski</option>
+          <option value="cs">Čeština</option>
+          <option value="da">Dansk</option>
+          <option value="et">Eesti</option>
+          <option value="fi">Suomi</option>
+          <option value="gl">Galego</option>
+          <option value="ka">ქართული</option>
+          <option value="el">Ελληνικά</option>
+          <option value="hu">Magyar</option>
+          <option value="is">Íslenska</option>
+          <option value="ga">Gaeilge</option>
+          <option value="lv">Latviešu</option>
+          <option value="lt">Lietuvių</option>
+          <option value="lb">Lëtzebuergesch</option>
+          <option value="mk">Македонски</option>
+          <option value="mt">Malti</option>
+          <option value="no">Norsk</option>
+          <option value="ro">Română</option>
+          <option value="sr">Српски</option>
+          <option value="sk">Slovenčina</option>
+          <option value="sl">Slovenščina</option>
+          <option value="sv">Svenska</option>
+          <option value="cy">Cymraeg</option>
+        </optgroup>
+        <optgroup label="── Americas ──">
+          <option value="es-419">Español (Latam)</option>
+          <option value="ht">Kreyòl ayisyen</option>
+          <option value="qu">Quechua</option>
+        </optgroup>
+        <optgroup label="── Middle East ──">
+          <option value="fa">فارسی</option>
+          <option value="he">עברית</option>
+          <option value="ku">Kurdî</option>
+          <option value="ps">پښتو</option>
+          <option value="ur">اردو</option>
+        </optgroup>
+        <optgroup label="── Africa ──">
+          <option value="af">Afrikaans</option>
+          <option value="am">አማርኛ</option>
+          <option value="ha">Hausa</option>
+          <option value="ig">Igbo</option>
+          <option value="rw">Kinyarwanda</option>
+          <option value="mg">Malagasy</option>
+          <option value="ny">Chichewa</option>
+          <option value="sn">Shona</option>
+          <option value="so">Soomaali</option>
+          <option value="st">Sesotho</option>
+          <option value="sw">Kiswahili</option>
+          <option value="xh">isiXhosa</option>
+          <option value="yo">Yorùbá</option>
+          <option value="zu">isiZulu</option>
+        </optgroup>
+        <optgroup label="── Asia &amp; Pacific ──">
+          <option value="bn">বাংলা</option>
+          <option value="my">မြန်မာဘာသာ</option>
+          <option value="zh-yue">粵語</option>
+          <option value="fil">Filipino</option>
+          <option value="gu-in">ગુજરાતી</option>
+          <option value="kn">ಕನ್ನಡ</option>
+          <option value="km">ភាសាខ្មែរ</option>
+          <option value="lo">ລາວ</option>
+          <option value="ms">Bahasa Melayu</option>
+          <option value="ml">മലയാളം</option>
+          <option value="mr">मराठी</option>
+          <option value="mn">Монгол</option>
+          <option value="ne">नेपाली</option>
+          <option value="pa">ਪੰਜਾਬੀ</option>
+          <option value="si">සිංහල</option>
+          <option value="ta">தமிழ்</option>
+          <option value="te">తెలుగు</option>
+          <option value="tl">Tagalog</option>
+          <option value="uz">Oʻzbekcha</option>
+          <option value="mi">Māori</option>
+          <option value="sm">Gagana Samoa</option>
+        </optgroup>
+      </select>
+    </div>
+  </nav>
+
+  <div class="mwe-scroll">
+
+    <!-- ========================================================
+         HEADER
+    ======================================================== -->
+    <header class="mwe-header">
+      <p class="mwe-header__game">NEED FOR SPEED MOST WANTED</p>
+      <h1 class="mwe-header__title">Save Editor</h1>
+      <p class="mwe-header__by" data-i18n="editor.by">by Piererra</p>
+    </header>
+
+    <main class="mwe-main">
+
+      <!-- ======================================================
+           LOAD FILE
+      ====================================================== -->
+      <section class="mwe-section mwe-section--first">
+
+        <div class="mwe-dropzone" id="mwe-dropzone" role="button" tabindex="0"
+             aria-label="Drop NFSMW save file or click to browse">
+          <svg class="mwe-dropzone__icon" viewBox="0 0 24 24" fill="none"
+               stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+            <path d="M12 16V4M12 16l-4-4M12 16l4-4" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M4 20h16" stroke-linecap="round"/>
+          </svg>
+          <p class="mwe-dropzone__text" id="mwe-dropzone-text">Drop your save file here</p>
+          <p class="mwe-dropzone__sub">or click to browse</p>
+          <input type="file" id="mwe-file-input" class="mwe-dropzone__input"
+                 aria-label="Select NFSMW save file" />
+        </div>
+
+        <!-- Platform selector -->
+        <div class="mwe-platform-row">
+          <span class="mwe-platform-row__label">Platform</span>
+          <div class="mwe-platform-row__btns">
+            <button class="mwe-platform-btn mwe-platform-btn--active" id="mwe-platform-pc" data-platform="pc">PC</button>
+            <button class="mwe-platform-btn" id="mwe-platform-ps2" data-platform="ps2">PS2</button>
+          </div>
+        </div>
+
+        <!-- Auto-backup checkbox -->
+        <label class="mwe-checkbox">
+          <input type="checkbox" id="mwe-auto-backup" checked />
+          <span class="mwe-checkbox__mark"></span>
+          <span class="mwe-checkbox__label" data-i18n="drop.backup">Auto-download backup on load</span>
+        </label>
+
+        <!-- Info bar — shown after load -->
+        <div class="mwe-infobar" id="mwe-infobar" hidden>
+          <div class="mwe-infobar__item">
+            <span class="mwe-infobar__key">NAME</span>
+            <span class="mwe-infobar__val" id="mwe-info-name">—</span>
+          </div>
+          <div class="mwe-infobar__item">
+            <span class="mwe-infobar__key">MONEY</span>
+            <span class="mwe-infobar__val mwe-infobar__val--gold" id="mwe-info-money">—</span>
+          </div>
+          <div class="mwe-infobar__item">
+            <span class="mwe-infobar__key">BOUNTY</span>
+            <span class="mwe-infobar__val mwe-infobar__val--orange" id="mwe-info-bounty">—</span>
+          </div>
+          <div class="mwe-infobar__item">
+            <span class="mwe-infobar__key">PLATFORM</span>
+            <span class="mwe-infobar__val" id="mwe-info-platform">—</span>
+          </div>
+          <div class="mwe-infobar__item">
+            <span class="mwe-infobar__key" data-i18n="info.size">SIZE</span>
+            <span class="mwe-infobar__val" id="mwe-info-size">—</span>
+          </div>
+          <div class="mwe-infobar__item">
+            <span class="mwe-infobar__key">HASH</span>
+            <span class="mwe-infobar__val mwe-infobar__val--mono" id="mwe-info-hash">—</span>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ======================================================
+           EDITOR BODY — revealed after file load
+      ====================================================== -->
+      <div id="mwe-editor-body" hidden>
+
+        <!-- PROFILE -->
+        <section class="mwe-section">
+          <h2 class="mwe-section__title">Profile</h2>
+          <div class="mwe-row">
+            <div class="mwe-field">
+              <label class="mwe-field__label" for="mwe-input-money">
+                Money <span class="mwe-field__hint">max 4,294,967,295</span>
+              </label>
+              <input type="number" id="mwe-input-money" class="mwe-input mwe-input--gold"
+                     min="0" max="4294967295" placeholder="e.g. 999999" />
+            </div>
+            <div class="mwe-field">
+              <label class="mwe-field__label" for="mwe-input-bounty">
+                Pursuit Bounty <span class="mwe-field__hint">lifetime total</span>
+              </label>
+              <input type="number" id="mwe-input-bounty" class="mwe-input mwe-input--orange"
+                     min="0" max="4294967295" placeholder="e.g. 1000000" />
+            </div>
+            <div class="mwe-field">
+              <label class="mwe-field__label" for="mwe-input-casename">
+                Case Name <span class="mwe-field__hint">max 12 chars</span>
+              </label>
+              <input type="text" id="mwe-input-casename" class="mwe-input"
+                     maxlength="12" placeholder="e.g. RAZOR" autocomplete="off" />
+            </div>
+          </div>
+        </section>
+
+        <!-- INFRACTIONS -->
+        <section class="mwe-section">
+          <div class="mwe-section__head">
+            <h2 class="mwe-section__title">Infractions</h2>
+            <p class="mwe-section__desc">Lifetime infraction counts recorded against your profile.</p>
+          </div>
+          <div class="mwe-grid-2" id="mwe-infractions-grid"></div>
+        </section>
+
+        <!-- PURSUIT STATS -->
+        <section class="mwe-section">
+          <div class="mwe-section__head">
+            <h2 class="mwe-section__title">Pursuit Stats</h2>
+            <p class="mwe-section__desc">Lifetime and single-best pursuit records.</p>
+          </div>
+
+          <!-- Lifetime pursuit -->
+          <div class="mwe-subsection">
+            <h3 class="mwe-subsection__title">// Lifetime</h3>
+            <div class="mwe-grid-2" id="mwe-lifetime-grid"></div>
+          </div>
+
+          <!-- Single best pursuit -->
+          <div class="mwe-subsection">
+            <h3 class="mwe-subsection__title">// Single Best</h3>
+            <div class="mwe-grid-2" id="mwe-singlebest-grid"></div>
+          </div>
+        </section>
+
+        <!-- PER-CAR RECORDS -->
+        <section class="mwe-section">
+          <div class="mwe-section__head">
+            <h2 class="mwe-section__title">Per-Car Records</h2>
+            <p class="mwe-section__desc">Bounty and infraction counts per car slot (active slots only).</p>
+          </div>
+          <div id="mwe-cars-container"></div>
+        </section>
+
+        <!-- PER-PURSUIT RECORDS -->
+        <section class="mwe-section">
+          <div class="mwe-section__head">
+            <h2 class="mwe-section__title">Pursuit Records</h2>
+            <p class="mwe-section__desc">Individual pursuit history — up to 5 entries.</p>
+          </div>
+          <div id="mwe-pursuits-container"></div>
+        </section>
+
+        <!-- DOWNLOAD -->
+        <section class="mwe-section mwe-section--actions mwe-section--last">
+          <div class="mwe-action-row">
+            <button class="mwe-btn mwe-btn--primary" id="mwe-btn-download">
+              Apply All &amp; Download
+            </button>
+            <button class="mwe-btn mwe-btn--ghost" id="mwe-btn-backup">
+              Download Backup (.bak)
+            </button>
+          </div>
+          <p class="mwe-action-hint">
+            PC: place the file in
+            <code>%USERPROFILE%\Documents\NFS Most Wanted\</code>
+          </p>
+        </section>
+
+      </div>
+      <!-- end #mwe-editor-body -->
+
+    </main>
+
+    <!-- ========================================================
+         FOOTER
+    ======================================================== -->
+    <footer class="mwe-footer">
+      <span>NFSMW Save Editor &nbsp;·&nbsp; Piererra Tools &nbsp;·&nbsp; Open Source</span>
+      <div class="mwe-footer__links">
+        <a class="mwe-footer__link" href="https://discord.com/users/1413503870373462070"
+           target="_blank" rel="noopener noreferrer">Discord</a>
+        <span class="mwe-footer__sep">·</span>
+        <a class="mwe-footer__link" href="https://github.com/piererra"
+           target="_blank" rel="noopener noreferrer">GitHub</a>
+        <span class="mwe-footer__sep">·</span>
+        <a class="mwe-footer__link" href="index.html">All Tools</a>
+      </div>
+    </footer>
+
+  </div>
+  <!-- end .mwe-scroll -->
+
+  <!-- Toast notification -->
+  <div class="mwe-toast" id="mwe-toast" role="status" aria-live="polite"></div>
+
+  <!-- three.js r134 + Vanta NET 0.5.24 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vanta@0.5.24/dist/vanta.net.min.js"></script>
+
+  <!-- Load order: i18n first (in <head>), then core -> ui -->
+  <script src="js/ptMWE-core.js"></script>
+  <script src="js/ptMWE-ui.js"></script>
+
+  <script>
+    VANTA.NET({
+      el: '#mwe-vanta-bg',
+      THREE: THREE,
+      mouseControls: true,
+      touchControls: true,
+      gyroControls: false,
+      color: 0x7dff00,
+      backgroundColor: 0x080a10,
+      points: 8.0,
+      maxDistance: 20.0,
+      spacing: 20.0,
+      showDots: true
+    });
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      ptI18n.init();
+    });
+  </script>
+
+</body>
+</html>
