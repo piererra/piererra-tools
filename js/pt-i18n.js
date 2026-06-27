@@ -194,7 +194,7 @@
       this.lang = saved;
 
       // Sync whichever selector exists on this page
-      var selIds = ['pt-lang-select', 'sde-lang-select'];
+      var selIds = ['pt-lang-select', 'sde-lang-select', 'mwe-lang-select'];
       for (var i = 0; i < selIds.length; i++) {
         var sel = document.getElementById(selIds[i]);
         if (sel) {
