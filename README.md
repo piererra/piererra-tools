@@ -9,7 +9,7 @@
 [![i18n: 75+ Languages](https://img.shields.io/badge/i18n-75%2B%20Languages-7dff00.svg)](#i18n-system)
 [![Desktop: Python + tkinter](https://img.shields.io/badge/Desktop-Python%20%2B%20tkinter-7dff00.svg)](#desktop-app)
 
-Piererra Tools is a growing collection of browser-based utilities built entirely with vanilla HTML, CSS, and JavaScript — no frameworks, no build steps, no installs. Each tool runs fully client-side, meaning your data never leaves your device. A standalone desktop version of the NFSU2 Save Editor is also available as a compiled `.exe`.
+Piererra Tools is a growing collection of browser-based utilities built entirely with vanilla HTML, CSS, and JavaScript — no frameworks, no build steps, no installs. Each tool runs fully client-side with zero network requests (privacy-first). A desktop version of Tool 01 (NFSU2 Save Editor) is also available as a standalone `.exe` built with Python + tkinter.
 
 ---
 
@@ -32,14 +32,14 @@ Piererra Tools is a growing collection of browser-based utilities built entirely
 
 ## Overview
 
-Piererra Tools started as a personal toolbox and is now shared openly for anyone who needs lightweight, no-nonsense browser utilities. The portal acts as a hub — each tool is self-contained in its own HTML page, styled with a unique accent colour and typography while sharing the same zero-dependency philosophy.
+Piererra Tools started as a personal toolbox and is now shared openly for anyone who needs lightweight, no-nonsense browser utilities. The portal acts as a hub — each tool is self-contained in its own HTML page with zero inter-page dependencies.
 
 **Core principles:**
 - Zero server calls — everything runs in your browser
 - Zero runtime dependencies — no npm, no bundler, no CDN required for core logic
 - Privacy-first — your files and data never touch a server
 - Mobile-friendly — works on any modern browser including Android
-- Multilingual — 75+ language selector with localStorage persistence
+- Multilingual — 75+ language selector with localStorage persistence (web) and config file persistence (desktop)
 - Desktop-ready — Python desktop app compilable to a standalone `.exe`
 
 ---
@@ -102,6 +102,7 @@ The save file has no extension — just the profile name as the filename.
 2. Click **Load Save File** to open your save.
 3. Edit name, money, slots, or use the cheat buttons.
 4. Click **Apply & Save** to write the modified file to disk.
+5. Your language preference is saved automatically — it will persist across restarts.
 
 See the [Desktop App](#desktop-app) section for build instructions.
 
@@ -142,7 +143,7 @@ See the [Desktop App](#desktop-app) section for build instructions.
 **Font:** EurostileBold (loaded from jsDelivr CDN — no local font file)  
 **Supported platforms:** PC (v1.3 EN) · PS2
 
-A full-featured save file editor for **Need for Speed Most Wanted 2005**. Edits money, pursuit bounty, case name, infractions, lifetime pursuit stats, single-best pursuit record, per-car records, and per-pursuit history — all in the browser. No install required. PC and PS2 save formats supported.
+A full-featured save file editor for **Need for Speed Most Wanted 2005**. Edits money, pursuit bounty, case name, infractions, lifetime pursuit stats, single-best pursuit record, per-car records, and pursuit history. Supports both PC and PS2 save formats with automatic MD5 recalculation.
 
 <details>
 <summary><strong>Feature list</strong></summary>
@@ -156,12 +157,12 @@ A full-featured save file editor for **Need for Speed Most Wanted 2005**. Edits 
 | **Money Edit** | Set money to any value from 0 to 4,294,967,295 (unsigned 32-bit max). |
 | **Pursuit Bounty Edit** | Set the lifetime pursuit bounty to any unsigned 32-bit value. |
 | **Case Name Edit** | Edit your in-game case name (max 12 characters). Alphanumeric, spaces, dashes, and underscores allowed. |
-| **Infractions** | Edit all 8 lifetime infraction types (Uint16 each): Speeding, Excessive Speeding, Reckless Driving, Ramming a Police Vehicle, Hit and Run, Damage to Property, Resisting Arrest, Driving Off Roadway. |
+| **Infractions** | Edit all 8 lifetime infraction types (Uint16 each): Speeding, Excessive Speeding, Reckless Driving, Ramming a Police Vehicle, Hit and Run, Damage to Property, Resisting Arrest, Evading Police. |
 | **Lifetime Pursuit Stats** | Edit 8 cumulative pursuit fields: length, police involved, police damaged, police immobilized, spike strips dodged, roadblocks dodged, helicopters deployed, cost to state. |
 | **Single Best Pursuit** | Edit 10 single-pursuit record fields — same as lifetime plus infractions recorded and bounty achieved. |
 | **Per-Car Records** | Each active car slot (up to 6) shows a bounty field and all 8 infraction types for that car. Empty slots (first byte = `0xFF`) are skipped. |
 | **Pursuit Records** | Up to 5 individual pursuit history entries, each with 10 editable stat fields. |
-| **MD5 Auto-Rehash** | Every write operation automatically recalculates the MD5 over the content region (`0x34` → file end − 16) and writes the new digest to the last 16 bytes of the save. The game validates this on load. |
+| **MD5 Auto-Rehash** | Every write operation automatically recalculates the MD5 over the content region (`0x34` → file end − 16) and writes the new digest to the last 16 bytes of the save. The save is always hash-valid. |
 | **Apply All & Download** | Downloads the modified save with the correct filename. |
 | **Download Backup (.bak)** | Downloads the current buffer (including any edits) as a `.bak` file. |
 
@@ -303,7 +304,7 @@ piererra-tools-desktop/
     ├── core.py                 # Binary engine — Python port of ptSDE-core.js
     ├── cars.py                 # Car database — Python port of ptSDE-cars.js (49 cars)
     ├── template.py             # Blank save — Python port of ptSDE-template.js
-    └── app.py                  # tkinter GUI — 15 languages, NFSU2 dark-lime theme
+    └── app.py                  # tkinter GUI — 15 languages, NFSU2 dark-lime theme, persistent language config
 ```
 
 <details>
@@ -329,19 +330,19 @@ Binary engine for NFSU2. Exposes `window.ptSDE`. Handles:
 - Browser download via `Blob` + `URL.createObjectURL`
 
 #### `js/ptSDE-ui.js`
-DOM layer for NFSU2. Wires all HTML elements to `ptSDE` methods. All user-visible strings go through `ptI18n.t()` — no hardcoded English. Handles dropzone, file input, slot grid rendering, modal (create new profile + car select), clone section, cheat buttons, download.
+DOM layer for NFSU2. Wires all HTML elements to `ptSDE` methods. All user-visible strings go through `ptI18n.t()` — no hardcoded English. Handles dropzone, file input, slot grid rendering, modal dialogs, and toast notifications.
 
 #### `js/ptSDE-cars.js`
 49-car database (27 standard + 22 custom/story cars). Each entry contains a key, display name, and slot-relative binary patch blocks. Exposes `window.ptSDE_CARS` with `getAll()` and `findByKey(key)`.
 
 #### `js/ptSDE-template.js`
-Single assignment `window.ptSDE_TEMPLATE` — a base64 string that decodes to a 54,966-byte blank NFSU2 save with a valid `20CM` header and size checksum. Used by `ptSDE-core.js` when creating a new profile.
+Single assignment `window.ptSDE_TEMPLATE` — a base64 string that decodes to a 54,966-byte blank NFSU2 save with a valid `20CM` header and size checksum. Used by `ptSDE-core.js` when creating a new save.
 
 #### `js/ptMWE-core.js`
-Binary engine for NFSMW. Exposes globals: `ptMWE` (state), `mweLoadFile()`, `mweSnapshot()`, and individual write helpers (`mweSetMoney`, `mweSetBounty`, `mweSetCaseName`, `mweSetInfraction`, `mweSetLifetime`, `mweSetSingleBest`, `mweSetCarBounty`, `mweSetCarInfraction`, `mweSetPursuitStat`). Contains a self-contained MD5 implementation — no external library. Every write helper calls `mweRehash()` automatically.
+Binary engine for NFSMW. Exposes globals: `ptMWE` (state), `mweLoadFile()`, `mweSnapshot()`, and individual write helpers (`mweSetMoney`, `mweSetBounty`, `mweSetCaseName`, `mweSetInfraction`, `mweRehash()`, `mweDownload()`).
 
 #### `js/ptMWE-ui.js`
-DOM layer for NFSMW. Handles dropzone, platform toggle, info bar, dynamic grid rendering for infractions / lifetime / single-best / per-car / per-pursuit sections, profile field events, toast system, download buttons, and language selector wiring.
+DOM layer for NFSMW. Handles dropzone, platform toggle, info bar, dynamic grid rendering for infractions / lifetime / single-best / per-car / per-pursuit sections, profile field events, toast system, and language selector.
 
 </details>
 
@@ -358,7 +359,7 @@ Python port of `ptSDE-cars.js`. All 49 cars. Exposes `get_all()`, `find_car_by_k
 Python port of `ptSDE-template.js`. `TEMPLATE_B64` — same 54,966-byte blank save as base64. Stored as implicit string concatenation for GitHub compatibility.
 
 #### `nfsu2_editor/app.py`
-Full tkinter GUI. NFSU2 dark-lime theme matching the web version. 15-language i18n. Sections: load/backup, info bar, profile edit, car slots (5 cards with MAX/NIL/UNLOCK per slot), cheats, clone, create new profile (with 49-car dropdown). Toast notification system. Language switcher in the header.
+Full tkinter GUI. NFSU2 dark-lime theme matching the web version. 15-language i18n with persistent language selection. Sections: load/backup, info bar, profile edit, car slots (5 cards with MAX/NIL/UNLOCK per slot), cheats, clone, create new save, and footer.
 
 </details>
 
@@ -369,6 +370,14 @@ Full tkinter GUI. NFSU2 dark-lime theme matching the web version. 15-language i1
 The desktop version is a standalone Windows `.exe` built from Python + tkinter. It replicates all features of the web NFSU2 editor with a native desktop UI — no browser needed.
 
 > **Note:** The desktop app covers Tool 01 (NFSU2) only. Tool 02 (NFSMW) is web-only.
+
+### Features
+
+- ✅ Full NFSU2 save editor functionality (create, load, edit, clone)
+- ✅ 15-language interface with **persistent language selection** (saved to `~/.piererra_tools/nfsu2_config.json`)
+- ✅ Dark-lime theme matching the web version
+- ✅ Standalone `.exe` — no Python or dependencies needed to run
+- ✅ Cross-platform potential — runs on Windows, Wine (Linux), and Winlator (Android)
 
 ### Requirements
 
@@ -455,9 +464,9 @@ The compiled `.exe` can be run inside **Winlator** (Android Wine environment):
 </details>
 
 <details>
-<summary><strong>Desktop i18n (15 languages)</strong></summary>
+<summary><strong>Desktop i18n (15 languages) with persistence</strong></summary>
 
-The desktop app includes its own translation system in `app.py`, separate from the web `pt-i18n.js`:
+The desktop app includes its own translation system in `app.py`, separate from the web `pt-i18n.js`. Language selection is persistent — saved to `~/.piererra_tools/nfsu2_config.json` on every change:
 
 | Code | Language | Code | Language |
 |---|---|---|---|
@@ -470,7 +479,7 @@ The desktop app includes its own translation system in `app.py`, separate from t
 | `zh` | 中文 (简体) | `nl` | Nederlands |
 | `ja` | 日本語 | | |
 
-Switching languages via the header dropdown rebuilds the UI instantly.
+Switching languages via the header dropdown rebuilds the UI instantly and saves your choice for next time.
 
 </details>
 
@@ -518,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 ```
 
-`init()` reads `pt-lang` from `localStorage`, syncs the language dropdown, and walks the entire DOM applying translations. Switching languages via the dropdown calls `ptI18n.setLang(code)` which re-applies all attributes and persists the selection.
+`init()` reads `pt-lang` from `localStorage`, syncs the language dropdown, and walks the entire DOM applying translations. Switching languages via the dropdown calls `ptI18n.setLang(code)` which persists to `localStorage` automatically.
 
 </details>
 
@@ -549,7 +558,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <summary><strong>Language selector widget (75+ languages)</strong></summary>
 
 Both editor pages include a language selector dropdown with 75+ languages grouped by region: Common, Europe, Americas, Middle East, Africa, Asia & Pacific. Selecting a language:
-- Saves the choice to `localStorage` under `pt-lang`
+- Saves the choice to `localStorage` under `pt-lang` (web) or `~/.piererra_tools/nfsu2_config.json` (desktop)
 - Re-translates all `data-i18n*` DOM elements instantly
 - Updates `<html lang>` for correct RTL/LTR rendering
 - Persists across pages and reloads
@@ -673,7 +682,7 @@ Contributions are welcome. The web version is vanilla HTML/CSS/JS with no build 
 
 **Guidelines**
 - Web: keep it vanilla — no frameworks, no npm, no bundlers.
-- Desktop: no external pip dependencies — stdlib only (`tkinter`, `struct`, `base64`, `re`, `os`).
+- Desktop: no external pip dependencies — stdlib only (`tkinter`, `struct`, `base64`, `re`, `os`, `json`, `threading`).
 - Tools must not make network requests for core functionality (client-side / file-only).
 - Match the existing CSS variables and `Theme` class — no hardcoded colours.
 - For new translatable strings, add to `pt-i18n.js` (web, 30 languages) and `app.py` `STRINGS` dict (desktop, 15 languages).
@@ -724,11 +733,11 @@ Prefix convention: `ptSDE-` (NFSU2), `ptMWE-` (NFSMW), `ptXXX-` (future tools).
 - [x] All toast & UI strings translated in `ptSDE-ui.js`
 - [x] EurostileBold via jsDelivr CDN (NFSMW — no local font file)
 - [x] Discord & GitHub links in footers
+- [x] Persist desktop language selection between sessions
 - [ ] Tool 02 — NFSMW desktop app (Python + tkinter)
 - [ ] Tool 03 — TBD
 - [ ] i18n wiring for NFSMW dynamic fields (per-car / per-pursuit section labels)
 - [ ] Expand full translation sets to 50+ languages
-- [ ] Persist desktop language selection between sessions
 - [ ] Light mode toggle (optional)
 - [ ] Keyboard navigation improvements
 
