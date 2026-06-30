@@ -5,6 +5,7 @@
 # Sections:
 #   Theme        — colour/font constants (NFSU2 dark-lime palette)
 #   I18n         — 15-language translation system
+#   Config       — persistent app config (language selection)
 #   Widgets      — reusable styled widget helpers
 #   App          — main Application class
 #     _build_*   — UI section builders
@@ -16,6 +17,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog, messagebox
 import os
+import json
 import threading
 
 from nfsu2_editor.core import SaveEditor
@@ -79,72 +81,72 @@ LANGS = {
 
 STRINGS = {
     # Window / header
-    "app.title":          {"en":"NFSU2 Save Editor","fr":"Éditeur NFSU2","es":"Editor NFSU2","de":"NFSU2 Editor","pt":"Editor NFSU2","ru":"Редактор NFSU2","zh":"NFSU2 存档编辑器","ja":"NFSU2 セーブエディタ","ko":"NFSU2 세이브 에디터","ar":"محرر NFSU2","it":"Editor NFSU2","tr":"NFSU2 Editör","id":"Editor NFSU2","pl":"Edytor NFSU2","nl":"NFSU2 Editor"},
-    "app.subtitle":       {"en":"Need for Speed Underground 2 — Save Data Editor","fr":"Need for Speed Underground 2 — Éditeur de sauvegarde","es":"Need for Speed Underground 2 — Editor de guardado","de":"Need for Speed Underground 2 — Speicherstand-Editor","pt":"Need for Speed Underground 2 — Editor de save","ru":"Need for Speed Underground 2 — Редактор сохранений","zh":"Need for Speed Underground 2 — 存档编辑器","ja":"Need for Speed Underground 2 — セーブデータエディタ","ko":"Need for Speed Underground 2 — 세이브 에디터","ar":"Need for Speed Underground 2 — محرر الحفظ","it":"Need for Speed Underground 2 — Editor salvataggio","tr":"Need for Speed Underground 2 — Kayıt Editörü","id":"Need for Speed Underground 2 — Editor simpanan","pl":"Need for Speed Underground 2 — Edytor zapisu","nl":"Need for Speed Underground 2 — Save Editor"},
+    "app.title":          {"en":"NFSU2 Save Editor","fr":"Éditeur NFSU2","es":"Editor NFSU2","de":"NFSU2 Editor","pt":"Editor NFSU2","ru":"Редактор NFSU2","zh":"NFSU2 存档编辑器","ja":"NFSU2 セーブエディタ","ko":"NFSU2 세이브 에디터","ar":"محرر حفظ NFSU2","it":"Editor Salvataggi NFSU2","tr":"NFSU2 Kayıt Editörü","id":"Editor Simpanan NFSU2","pl":"Edytor Zapisów NFSU2","nl":"NFSU2 Opslag-editor"},
+    "app.subtitle":       {"en":"Need for Speed Underground 2 — Save Data Editor","fr":"Need for Speed Underground 2 — Éditeur de sauvegarde","es":"Need for Speed Underground 2 — Editor de guardado","de":"Need for Speed Underground 2 — Spielstand-Editor","pt":"Need for Speed Underground 2 — Editor de Salva","ru":"Need for Speed Underground 2 — Редактор сохранений","zh":"Need for Speed Underground 2 — 存档编辑器","ja":"Need for Speed Underground 2 — セーブエディタ","ko":"Need for Speed Underground 2 — 세이브 에디터","ar":"Need for Speed Underground 2 — محرر الحفظ","it":"Need for Speed Underground 2 — Editor Salvataggi","tr":"Need for Speed Underground 2 — Kayıt Editörü","id":"Need for Speed Underground 2 — Editor Simpanan","pl":"Need for Speed Underground 2 — Edytor Zapisów","nl":"Need for Speed Underground 2 — Opslag-editor"},
     "app.by":             {"en":"by Piererra","fr":"par Piererra","es":"por Piererra","de":"von Piererra","pt":"por Piererra","ru":"от Piererra","zh":"由 Piererra 制作","ja":"Piererra 作","ko":"Piererra 제작","ar":"بواسطة Piererra","it":"di Piererra","tr":"Piererra tarafından","id":"oleh Piererra","pl":"przez Piererra","nl":"door Piererra"},
     # File section
-    "file.load":          {"en":"Load Save File","fr":"Charger le fichier","es":"Cargar guardado","de":"Spielstand laden","pt":"Carregar save","ru":"Загрузить файл","zh":"加载存档","ja":"セーブ読み込み","ko":"세이브 불러오기","ar":"تحميل الملف","it":"Carica file","tr":"Dosya yükle","id":"Muat file","pl":"Wczytaj plik","nl":"Laad save"},
-    "file.backup":        {"en":"Auto-backup on load","fr":"Sauvegarde auto au chargement","es":"Copia de seguridad automática","de":"Automatisches Backup","pt":"Backup automático","ru":"Авто-резервная копия","zh":"加载时自动备份","ja":"読込時自動バックアップ","ko":"로드 시 자동 백업","ar":"نسخ احتياطي تلقائي","it":"Backup automatico","tr":"Otomatik yedek","id":"Cadangan otomatis","pl":"Auto-kopia przy ładowaniu","nl":"Automatisch backup"},
-    "file.save_bak":      {"en":"Download Backup (.bak)","fr":"Télécharger backup (.bak)","es":"Descargar copia (.bak)","de":"Backup herunterladen (.bak)","pt":"Baixar backup (.bak)","ru":"Скачать резервную копию (.bak)","zh":"下载备份 (.bak)","ja":"バックアップDL (.bak)","ko":"백업 다운로드 (.bak)","ar":"تنزيل النسخة الاحتياطية","it":"Scarica backup (.bak)","tr":"Yedek indir (.bak)","id":"Unduh cadangan (.bak)","pl":"Pobierz backup (.bak)","nl":"Download backup (.bak)"},
+    "file.load":          {"en":"Load Save File","fr":"Charger le fichier","es":"Cargar guardado","de":"Spielstand laden","pt":"Carregar save","ru":"Загрузить файл","zh":"加载存档","ja":"セーブファイルを開く","ko":"세이브 파일 열기","ar":"تحميل ملف الحفظ","it":"Carica File","tr":"Dosya Yükle","id":"Muat File","pl":"Załaduj Plik","nl":"Bestand laden"},
+    "file.backup":        {"en":"Auto-backup on load","fr":"Sauvegarde auto au chargement","es":"Copia de seguridad automática","de":"Automatisches Backup","pt":"Backup automático","ru":"Автоматическое резервное копирование","zh":"加载时自动备份","ja":"読み込み時に自動バックアップ","ko":"로드 시 자동 백업","ar":"النسخ الاحتياطي التلقائي عند التحميل","it":"Backup automatico al caricamento","tr":"Yükleme sırasında otomatik yedekleme","id":"Cadangan otomatis saat dimuat","pl":"Automatyczna kopia zapasowa przy ładowaniu","nl":"Automatische back-up bij laden"},
+    "file.save_bak":      {"en":"Download Backup (.bak)","fr":"Télécharger backup (.bak)","es":"Descargar copia (.bak)","de":"Backup herunterladen (.bak)","pt":"Baixar backup (.bak)","ru":"Скачать резервную копию (.bak)","zh":"下载备份 (.bak)","ja":"バックアップをダウンロード (.bak)","ko":"백업 다운로드 (.bak)","ar":"تحميل النسخة الاحتياطية (.bak)","it":"Scarica Backup (.bak)","tr":"Yedeklemeyi İndir (.bak)","id":"Unduh Cadangan (.bak)","pl":"Pobierz kopię zapasową (.bak)","nl":"Back-up downloaden (.bak)"},
     # Info bar
     "info.profile":       {"en":"PROFILE","fr":"PROFIL","es":"PERFIL","de":"PROFIL","pt":"PERFIL","ru":"ПРОФИЛЬ","zh":"档案","ja":"プロフィール","ko":"프로필","ar":"الملف","it":"PROFILO","tr":"PROFİL","id":"PROFIL","pl":"PROFIL","nl":"PROFIEL"},
     "info.money":         {"en":"MONEY","fr":"ARGENT","es":"DINERO","de":"GELD","pt":"DINHEIRO","ru":"ДЕНЬГИ","zh":"金钱","ja":"お金","ko":"돈","ar":"المال","it":"DENARO","tr":"PARA","id":"UANG","pl":"PIENIĄDZE","nl":"GELD"},
-    "info.slots":         {"en":"CAR SLOTS","fr":"EMPLACEMENTS","es":"RANURAS","de":"STELLPLÄTZE","pt":"SLOTS","ru":"СЛОТЫ","zh":"车位","ja":"スロット","ko":"슬롯","ar":"الفتحات","it":"SLOT AUTO","tr":"ARABA YUVASI","id":"SLOT MOBIL","pl":"MIEJSCA","nl":"AUTOPLAATSEN"},
-    "info.header":        {"en":"HEADER","fr":"EN-TÊTE","es":"CABECERA","de":"KOPFZEILE","pt":"CABEÇALHO","ru":"ЗАГОЛОВОК","zh":"文件头","ja":"ヘッダー","ko":"헤더","ar":"الترويسة","it":"INTESTAZIONE","tr":"BAŞLIK","id":"HEADER","pl":"NAGŁÓWEK","nl":"HEADER"},
+    "info.slots":         {"en":"CAR SLOTS","fr":"EMPLACEMENTS","es":"RANURAS","de":"STELLPLÄTZE","pt":"SLOTS","ru":"СЛОТЫ","zh":"车位","ja":"スロット","ko":"슬롯","ar":"الفتحات","it":"SLOT AUTO","tr":"ARAÇ SLOTLARI","id":"SLOT MOBIL","pl":"SLOTY SAMOCHODÓW","nl":"AUTOSLOTS"},
+    "info.header":        {"en":"HEADER","fr":"EN-TÊTE","es":"CABECERA","de":"KOPFZEILE","pt":"CABEÇALHO","ru":"ЗАГОЛОВОК","zh":"文件头","ja":"ヘッダー","ko":"헤더","ar":"الرأس","it":"INTESTAZIONE","tr":"BAŞLIK","id":"KEPALA","pl":"NAGŁÓWEK","nl":"KOPTEKST"},
     "info.size":          {"en":"SIZE","fr":"TAILLE","es":"TAMAÑO","de":"GRÖSSE","pt":"TAMANHO","ru":"РАЗМЕР","zh":"大小","ja":"サイズ","ko":"크기","ar":"الحجم","it":"DIMENSIONE","tr":"BOYUT","id":"UKURAN","pl":"ROZMIAR","nl":"GROOTTE"},
-    "info.valid":         {"en":"VALID ✓","fr":"VALIDE ✓","es":"VÁLIDO ✓","de":"GÜLTIG ✓","pt":"VÁLIDO ✓","ru":"ВЕРНЫЙ ✓","zh":"有效 ✓","ja":"有効 ✓","ko":"유효 ✓","ar":"صالح ✓","it":"VALIDO ✓","tr":"GEÇERLİ ✓","id":"VALID ✓","pl":"PRAWIDŁOWY ✓","nl":"GELDIG ✓"},
-    "info.invalid":       {"en":"INVALID ✗","fr":"INVALIDE ✗","es":"INVÁLIDO ✗","de":"UNGÜLTIG ✗","pt":"INVÁLIDO ✗","ru":"НЕВЕРНЫЙ ✗","zh":"无效 ✗","ja":"無効 ✗","ko":"유효하지 않음 ✗","ar":"غير صالح ✗","it":"NON VALIDO ✗","tr":"GEÇERSİZ ✗","id":"TIDAK VALID ✗","pl":"NIEPRAWIDŁOWY ✗","nl":"ONGELDIG ✗"},
-    "info.no_save":       {"en":"No save loaded","fr":"Aucun fichier chargé","es":"Sin guardado","de":"Kein Spielstand","pt":"Nenhum save","ru":"Нет файла","zh":"未加载存档","ja":"未読み込み","ko":"세이브 없음","ar":"لا يوجد حفظ","it":"Nessun file","tr":"Kayıt yok","id":"Tidak ada simpanan","pl":"Brak pliku","nl":"Geen save"},
+    "info.valid":         {"en":"VALID ✓","fr":"VALIDE ✓","es":"VÁLIDO ✓","de":"GÜLTIG ✓","pt":"VÁLIDO ✓","ru":"ВЕРНЫЙ ✓","zh":"有效 ✓","ja":"有効 ✓","ko":"유효 ✓","ar":"صحيح ✓","it":"VALIDO ✓","tr":"GEÇERLİ ✓","id":"SAH ✓","pl":"WAŻNE ✓","nl":"GELDIG ✓"},
+    "info.invalid":       {"en":"INVALID ✗","fr":"INVALIDE ✗","es":"INVÁLIDO ✗","de":"UNGÜLTIG ✗","pt":"INVÁLIDO ✗","ru":"НЕВЕРНЫЙ ✗","zh":"无效 ✗","ja":"無効 ✗","ko":"유효하지 않음 ✗","ar":"غير صحيح ✗","it":"NON VALIDO ✗","tr":"GEÇERSİZ ✗","id":"TIDAK SAH ✗","pl":"NIEPRAWIDŁOWE ✗","nl":"ONGELDIG ✗"},
+    "info.no_save":       {"en":"No save loaded","fr":"Aucun fichier chargé","es":"Sin guardado","de":"Kein Spielstand","pt":"Nenhum save","ru":"Нет файла","zh":"未加载存档","ja":"セーブが読み込まれていません","ko":"세이브 로드 안 됨","ar":"لم يتم تحميل حفظ","it":"Nessun file caricato","tr":"Dosya Yüklenmedi","id":"Tidak ada file yang dimuat","pl":"Nie załadowano pliku","nl":"Geen bestand geladen"},
     # Profile section
     "sec.profile":        {"en":"Profile","fr":"Profil","es":"Perfil","de":"Profil","pt":"Perfil","ru":"Профиль","zh":"档案","ja":"プロフィール","ko":"프로필","ar":"الملف الشخصي","it":"Profilo","tr":"Profil","id":"Profil","pl":"Profil","nl":"Profiel"},
-    "sec.name":           {"en":"Profile Name","fr":"Nom de profil","es":"Nombre de perfil","de":"Profilname","pt":"Nome do perfil","ru":"Имя профиля","zh":"档案名称","ja":"プロフィール名","ko":"프로필 이름","ar":"اسم الملف","it":"Nome profilo","tr":"Profil adı","id":"Nama profil","pl":"Nazwa profilu","nl":"Profielnaam"},
-    "sec.name_hint":      {"en":"max 7 alphanumeric","fr":"max 7 caractères","es":"máx. 7 alfanumérico","de":"max. 7 alphanumerisch","pt":"máx. 7 alfanumérico","ru":"макс. 7 символов","zh":"最多7位字母数字","ja":"最大7文字英数字","ko":"최대 7자 영숫자","ar":"أقصى 7 أحرف","it":"max 7 alfanumerico","tr":"maks. 7 alfanümerik","id":"maks. 7 alfanumerik","pl":"maks. 7 znaków","nl":"max 7 alfanumeriek"},
+    "sec.name":           {"en":"Profile Name","fr":"Nom de profil","es":"Nombre de perfil","de":"Profilname","pt":"Nome do perfil","ru":"Имя профиля","zh":"档案名称","ja":"プロフィール名","ko":"프로필 이름","ar":"اسم الملف الشخصي","it":"Nome profilo","tr":"Profil Adı","id":"Nama Profil","pl":"Nazwa profilu","nl":"Profielnaam"},
+    "sec.name_hint":      {"en":"max 7 alphanumeric","fr":"max 7 caractères","es":"máx. 7 alfanumérico","de":"max. 7 alphanumerisch","pt":"máx. 7 alfanumérico","ru":"макс. 7 символов","zh":"最多 7 个字母数字","ja":"最大 7 文字","ko":"최대 7 자 (영숫자)","ar":"الحد الأقصى 7 أحرف","it":"max 7 caratteri","tr":"maks. 7 karakter","id":"maks. 7 karakter","pl":"maks. 7 znaków","nl":"max. 7 tekens"},
     "sec.money":          {"en":"Money","fr":"Argent","es":"Dinero","de":"Geld","pt":"Dinheiro","ru":"Деньги","zh":"金钱","ja":"お金","ko":"돈","ar":"المال","it":"Denaro","tr":"Para","id":"Uang","pl":"Pieniądze","nl":"Geld"},
-    "sec.money_hint":     {"en":"0 – 2,147,483,647","fr":"0 – 2 147 483 647","es":"0 – 2.147.483.647","de":"0 – 2.147.483.647","pt":"0 – 2.147.483.647","ru":"0 – 2 147 483 647","zh":"0 – 2,147,483,647","ja":"0 ～ 2,147,483,647","ko":"0 ~ 2,147,483,647","ar":"0 – 2,147,483,647","it":"0 – 2.147.483.647","tr":"0 – 2.147.483.647","id":"0 – 2.147.483.647","pl":"0 – 2 147 483 647","nl":"0 – 2.147.483.647"},
-    "sec.apply":          {"en":"Apply & Save","fr":"Appliquer & Enregistrer","es":"Aplicar y guardar","de":"Anwenden & Speichern","pt":"Aplicar e salvar","ru":"Применить и сохранить","zh":"应用并保存","ja":"適用して保存","ko":"적용 및 저장","ar":"تطبيق وحفظ","it":"Applica e salva","tr":"Uygula ve kaydet","id":"Terapkan & simpan","pl":"Zastosuj i zapisz","nl":"Toepassen & opslaan"},
+    "sec.money_hint":     {"en":"0 – 2,147,483,647","fr":"0 – 2 147 483 647","es":"0 – 2.147.483.647","de":"0 – 2.147.483.647","pt":"0 – 2.147.483.647","ru":"0 – 2 147 483 647","zh":"0 – 2,147,483,647","ja":"0 – 2,147,483,647","ko":"0 – 2,147,483,647","ar":"0 – 2,147,483,647","it":"0 – 2.147.483.647","tr":"0 – 2.147.483.647","id":"0 – 2.147.483.647","pl":"0 – 2 147 483 647","nl":"0 – 2.147.483.647"},
+    "sec.apply":          {"en":"Apply & Save","fr":"Appliquer & Enregistrer","es":"Aplicar y guardar","de":"Anwenden & Speichern","pt":"Aplicar e salvar","ru":"Применить и сохранить","zh":"应用并保存","ja":"適用して保存","ko":"적용 및 저장","ar":"تطبيق وحفظ","it":"Applica e Salva","tr":"Uygula ve Kaydet","id":"Terapkan & Simpan","pl":"Zastosuj i zapisz","nl":"Toepassen en opslaan"},
     # Car slots section
-    "sec.slots":          {"en":"Car Slots","fr":"Emplacements voiture","es":"Ranuras de coche","de":"Autostellplätze","pt":"Slots de carro","ru":"Слоты машин","zh":"车位","ja":"カースロット","ko":"자동차 슬롯","ar":"فتحات السيارات","it":"Slot auto","tr":"Araba yuvaları","id":"Slot mobil","pl":"Miejsca na samochody","nl":"Autoplaatsen"},
-    "slot.in_use":        {"en":"IN USE","fr":"UTILISÉ","es":"EN USO","de":"BELEGT","pt":"EM USO","ru":"ЗАНЯТ","zh":"已使用","ja":"使用中","ko":"사용 중","ar":"قيد الاستخدام","it":"IN USO","tr":"KULLANILIYOR","id":"DIGUNAKAN","pl":"UŻYWANE","nl":"IN GEBRUIK"},
-    "slot.empty":         {"en":"EMPTY","fr":"VIDE","es":"VACÍO","de":"LEER","pt":"VAZIO","ru":"ПУСТО","zh":"空","ja":"空","ko":"비어있음","ar":"فارغ","it":"VUOTO","tr":"BOŞ","id":"KOSONG","pl":"PUSTE","nl":"LEEG"},
+    "sec.slots":          {"en":"Car Slots","fr":"Emplacements voiture","es":"Ranuras de coche","de":"Autostellplätze","pt":"Slots de carro","ru":"Слоты машин","zh":"车位","ja":"カースロット","ko":"자동차 슬롯","ar":"فتحات السيارات","it":"Slot Auto","tr":"Araç Slotları","id":"Slot Mobil","pl":"Sloty samochodów","nl":"Autoslots"},
+    "slot.in_use":        {"en":"IN USE","fr":"UTILISÉ","es":"EN USO","de":"BELEGT","pt":"EM USO","ru":"ЗАНЯТ","zh":"已使用","ja":"使用中","ko":"사용 중","ar":"قيد الاستخدام","it":"IN USO","tr":"KULLANIMDA","id":"DIGUNAKAN","pl":"UŻYWANY","nl":"IN GEBRUIK"},
+    "slot.empty":         {"en":"EMPTY","fr":"VIDE","es":"VACÍO","de":"LEER","pt":"VAZIO","ru":"ПУСТО","zh":"空","ja":"空","ko":"비어있음","ar":"فارغ","it":"VUOTO","tr":"BOŞ","id":"KOSONG","pl":"PUSTY","nl":"LEEG"},
     "slot.max":           {"en":"MAX","fr":"MAX","es":"MAX","de":"MAX","pt":"MAX","ru":"МАКС","zh":"MAX","ja":"MAX","ko":"MAX","ar":"MAX","it":"MAX","tr":"MAX","id":"MAX","pl":"MAX","nl":"MAX"},
     "slot.nil":           {"en":"NIL","fr":"NIL","es":"NIL","de":"NIL","pt":"NIL","ru":"НОЛЬ","zh":"NIL","ja":"NIL","ko":"NIL","ar":"NIL","it":"NIL","tr":"NIL","id":"NIL","pl":"NIL","nl":"NIL"},
-    "slot.unlock":        {"en":"UNLOCK","fr":"DÉBLOQUER","es":"DESBLOQUEAR","de":"FREISCHALTEN","pt":"DESBLOQUEAR","ru":"РАЗБЛОКИРОВАТЬ","zh":"解锁","ja":"解放","ko":"해제","ar":"فتح","it":"SBLOCCA","tr":"AÇ","id":"BUKA","pl":"ODBLOKUJ","nl":"ONTGRENDEL"},
+    "slot.unlock":        {"en":"UNLOCK","fr":"DÉBLOQUER","es":"DESBLOQUEAR","de":"FREISCHALTEN","pt":"DESBLOQUEAR","ru":"РАЗБЛОКИРОВАТЬ","zh":"解锁","ja":"解放","ko":"해제","ar":"فتح","it":"SBLOCCA","tr":"KILIT AÇ","id":"BUKA KUNCI","pl":"ODBLOKUJ","nl":"ONTGRENDEL"},
     # Cheats section
-    "sec.cheats":         {"en":"Cheats","fr":"Triches","es":"Trucos","de":"Cheats","pt":"Trapaças","ru":"Читы","zh":"作弊","ja":"チート","ko":"치트","ar":"الغش","it":"Trucchi","tr":"Hileler","id":"Cheat","pl":"Cheaty","nl":"Cheats"},
-    "cheat.max_money":    {"en":"Max Money","fr":"Argent max","es":"Dinero máximo","de":"Max Geld","pt":"Dinheiro máximo","ru":"Макс деньги","zh":"最大金钱","ja":"金額最大化","ko":"최대 돈","ar":"أقصى مال","it":"Soldi massimi","tr":"Maks para","id":"Uang maks","pl":"Maks pieniędzy","nl":"Max geld"},
-    "cheat.unlock_slots": {"en":"Unlock All Car Slots","fr":"Déverrouiller tous les emplacements","es":"Desbloquear todas las ranuras","de":"Alle Stellplätze freischalten","pt":"Desbloquear todos os slots","ru":"Разблокировать все слоты","zh":"解锁所有车位","ja":"全スロット解放","ko":"모든 슬롯 해제","ar":"فتح جميع الفتحات","it":"Sblocca tutti gli slot","tr":"Tüm yuvaları aç","id":"Buka semua slot","pl":"Odblokuj wszystkie miejsca","nl":"Alle slots ontgrendelen"},
-    "cheat.unlock_parts": {"en":"Unlock All Parts","fr":"Déverrouiller toutes les pièces","es":"Desbloquear todas las piezas","de":"Alle Teile freischalten","pt":"Desbloquear todas as peças","ru":"Разблокировать все детали","zh":"解锁所有零件","ja":"全パーツ解放","ko":"모든 파츠 해제","ar":"فتح جميع الأجزاء","it":"Sblocca tutti i pezzi","tr":"Tüm parçaları aç","id":"Buka semua suku cadang","pl":"Odblokuj wszystkie części","nl":"Alle onderdelen ontgrendelen"},
+    "sec.cheats":         {"en":"Cheats","fr":"Triches","es":"Trucos","de":"Cheats","pt":"Trapaças","ru":"Читы","zh":"作弊","ja":"チート","ko":"치트","ar":"الغش","it":"Trucchi","tr":"Hile","id":"Curang","pl":"Cheat","nl":"Cheats"},
+    "cheat.max_money":    {"en":"Max Money","fr":"Argent max","es":"Dinero máximo","de":"Max Geld","pt":"Dinheiro máximo","ru":"Макс деньги","zh":"最大金钱","ja":"金額最大化","ko":"최대 금액","ar":"أقصى أموال","it":"Denaro Max","tr":"Max Para","id":"Uang Maks","pl":"Maks pieniądze","nl":"Max geld"},
+    "cheat.unlock_slots": {"en":"Unlock All Car Slots","fr":"Déverrouiller tous les emplacements","es":"Desbloquear todas las ranuras","de":"Alle Stellplätze freischalten","pt":"Desbloquear todos os slots","ru":"Разблокировать все слоты","zh":"解锁全部车位","ja":"すべてのスロットを解放","ko":"모든 슬롯 해제","ar":"فتح جميع الفتحات","it":"Sblocca tutti gli slot","tr":"Tüm Slotları Kilit Aç","id":"Buka Semua Slot","pl":"Odblokuj wszystkie sloty","nl":"Ontgrendel alle slots"},
+    "cheat.unlock_parts": {"en":"Unlock All Parts","fr":"Déverrouiller toutes les pièces","es":"Desbloquear todas las piezas","de":"Alle Teile freischalten","pt":"Desbloquear peças","ru":"Разблокировать все запчасти","zh":"解锁全部零件","ja":"すべてのパーツを解放","ko":"모든 부품 해제","ar":"فتح جميع الأجزاء","it":"Sblocca tutte le parti","tr":"Tüm Parçaları Kilit Aç","id":"Buka Semua Bagian","pl":"Odblokuj wszystkie części","nl":"Ontgrendel alle onderdelen"},
     # Clone section
-    "sec.clone":          {"en":"Clone Save","fr":"Cloner la sauvegarde","es":"Clonar guardado","de":"Spielstand klonen","pt":"Clonar save","ru":"Клонировать","zh":"克隆存档","ja":"セーブをクローン","ko":"세이브 복제","ar":"استنساخ الحفظ","it":"Clona salvataggio","tr":"Kaydı klonla","id":"Klon simpanan","pl":"Klonuj zapis","nl":"Save klonen"},
-    "clone.new_name":     {"en":"New Profile Name","fr":"Nouveau nom de profil","es":"Nuevo nombre de perfil","de":"Neuer Profilname","pt":"Novo nome de perfil","ru":"Новое имя профиля","zh":"新档案名称","ja":"新しいプロフィール名","ko":"새 프로필 이름","ar":"اسم ملف جديد","it":"Nuovo nome profilo","tr":"Yeni profil adı","id":"Nama profil baru","pl":"Nowa nazwa profilu","nl":"Nieuwe profielnaam"},
-    "clone.btn":          {"en":"Clone & Save","fr":"Cloner & Enregistrer","es":"Clonar y guardar","de":"Klonen & Speichern","pt":"Clonar e salvar","ru":"Клонировать и сохранить","zh":"克隆并保存","ja":"クローンして保存","ko":"복제 및 저장","ar":"استنساخ وحفظ","it":"Clona e salva","tr":"Klonla ve kaydet","id":"Klon & simpan","pl":"Klonuj i zapisz","nl":"Klonen & opslaan"},
+    "sec.clone":          {"en":"Clone Save","fr":"Cloner la sauvegarde","es":"Clonar guardado","de":"Spielstand klonen","pt":"Clonar save","ru":"Клонировать","zh":"克隆存档","ja":"セーブをクローン","ko":"세이브 복제","ar":"استنساخ الحفظ","it":"Clona Salvataggio","tr":"Kayıdı Klonla","id":"Klona Simpanan","pl":"Klonuj zapis","nl":"Zet opslag om"},
+    "clone.new_name":     {"en":"New Profile Name","fr":"Nouveau nom de profil","es":"Nuevo nombre de perfil","de":"Neuer Profilname","pt":"Novo nome de perfil","ru":"Новое имя профиля","zh":"新档案名称","ja":"新しいプロフィール名","ko":"새 프로필 이름","ar":"اسم الملف الشخصي الجديد","it":"Nuovo nome profilo","tr":"Yeni Profil Adı","id":"Nama Profil Baru","pl":"Nowa nazwa profilu","nl":"Nieuwe profielnaam"},
+    "clone.btn":          {"en":"Clone & Save","fr":"Cloner & Enregistrer","es":"Clonar y guardar","de":"Klonen & Speichern","pt":"Clonar e salvar","ru":"Клонировать и сохранить","zh":"克隆并保存","ja":"クローンして保存","ko":"복제 및 저장","ar":"استنساخ وحفظ","it":"Clona e Salva","tr":"Klonla ve Kaydet","id":"Klona dan Simpan","pl":"Klonuj i zapisz","nl":"Klonen en opslaan"},
     # Create new profile
-    "sec.create":         {"en":"Create New Profile","fr":"Créer un nouveau profil","es":"Crear nuevo perfil","de":"Neues Profil erstellen","pt":"Criar novo perfil","ru":"Создать новый профиль","zh":"创建新档案","ja":"新しいプロフィール作成","ko":"새 프로필 만들기","ar":"إنشاء ملف جديد","it":"Crea nuovo profilo","tr":"Yeni profil oluştur","id":"Buat profil baru","pl":"Utwórz nowy profil","nl":"Nieuw profiel aanmaken"},
-    "create.name":        {"en":"Profile Name","fr":"Nom de profil","es":"Nombre de perfil","de":"Profilname","pt":"Nome do perfil","ru":"Имя профиля","zh":"档案名称","ja":"プロフィール名","ko":"프로필 이름","ar":"اسم الملف","it":"Nome profilo","tr":"Profil adı","id":"Nama profil","pl":"Nazwa profilu","nl":"Profielnaam"},
-    "create.money":       {"en":"Starting Money","fr":"Argent de départ","es":"Dinero inicial","de":"Startgeld","pt":"Dinheiro inicial","ru":"Начальные деньги","zh":"初始金钱","ja":"スタートマネー","ko":"시작 돈","ar":"المال الابتدائي","it":"Soldi iniziali","tr":"Başlangıç parası","id":"Uang awal","pl":"Pieniądze startowe","nl":"Startgeld"},
-    "create.car":         {"en":"Starting Car","fr":"Voiture de départ","es":"Coche inicial","de":"Startauto","pt":"Carro inicial","ru":"Стартовый автомобиль","zh":"初始车辆","ja":"スタートカー","ko":"시작 차량","ar":"سيارة البداية","it":"Auto iniziale","tr":"Başlangıç arabası","id":"Mobil awal","pl":"Samochód startowy","nl":"Startauto"},
-    "create.car_default": {"en":"Default (Peugeot 206)","fr":"Défaut (Peugeot 206)","es":"Por defecto (Peugeot 206)","de":"Standard (Peugeot 206)","pt":"Padrão (Peugeot 206)","ru":"По умолчанию (Peugeot 206)","zh":"默认 (Peugeot 206)","ja":"デフォルト (Peugeot 206)","ko":"기본값 (Peugeot 206)","ar":"الافتراضي (بيجو 206)","it":"Predefinito (Peugeot 206)","tr":"Varsayılan (Peugeot 206)","id":"Default (Peugeot 206)","pl":"Domyślny (Peugeot 206)","nl":"Standaard (Peugeot 206)"},
-    "create.unlock_parts":{"en":"Unlock All Parts","fr":"Déverrouiller toutes les pièces","es":"Desbloquear todas las piezas","de":"Alle Teile freischalten","pt":"Desbloquear peças","ru":"Разблокировать все детали","zh":"解锁所有零件","ja":"全パーツ解放","ko":"모든 파츠 해제","ar":"فتح جميع الأجزاء","it":"Sblocca tutti i pezzi","tr":"Tüm parçaları aç","id":"Buka semua suku cadang","pl":"Odblokuj wszystkie części","nl":"Alle onderdelen ontgrendelen"},
-    "create.btn":         {"en":"Create & Save","fr":"Créer & Enregistrer","es":"Crear y guardar","de":"Erstellen & Speichern","pt":"Criar e salvar","ru":"Создать и сохранить","zh":"创建并保存","ja":"作成して保存","ko":"만들기 및 저장","ar":"إنشاء وحفظ","it":"Crea e salva","tr":"Oluştur ve kaydet","id":"Buat & simpan","pl":"Utwórz i zapisz","nl":"Aanmaken & opslaan"},
+    "sec.create":         {"en":"Create New Profile","fr":"Créer un nouveau profil","es":"Crear nuevo perfil","de":"Neues Profil erstellen","pt":"Criar novo perfil","ru":"Создать новый профиль","zh":"创建新档案","ja":"新しいプロフィールを作成","ko":"새 프로필 만들기","ar":"إنشاء ملف شخصي جديد","it":"Crea nuovo profilo","tr":"Yeni Profil Oluştur","id":"Buat Profil Baru","pl":"Utwórz nowy profil","nl":"Nieuw profiel maken"},
+    "create.name":        {"en":"Profile Name","fr":"Nom de profil","es":"Nombre de perfil","de":"Profilname","pt":"Nome do perfil","ru":"Имя профиля","zh":"档案名称","ja":"プロフィール名","ko":"프로필 이름","ar":"اسم الملف الشخصي","it":"Nome profilo","tr":"Profil Adı","id":"Nama Profil","pl":"Nazwa profilu","nl":"Profielnaam"},
+    "create.money":       {"en":"Starting Money","fr":"Argent de départ","es":"Dinero inicial","de":"Startgeld","pt":"Dinheiro inicial","ru":"Начальные деньги","zh":"初始金钱","ja":"開始金額","ko":"시작 금액","ar":"أموال البداية","it":"Denaro iniziale","tr":"Başlangıç Parası","id":"Uang Awal","pl":"Pieniądze startowe","nl":"Startgeld"},
+    "create.car":         {"en":"Starting Car","fr":"Voiture de départ","es":"Coche inicial","de":"Startauto","pt":"Carro inicial","ru":"Стартовый автомобиль","zh":"初始车","ja":"開始車","ko":"시작 자동차","ar":"سيارة البداية","it":"Auto iniziale","tr":"Başlangıç Arabası","id":"Mobil Awal","pl":"Samochód startowy","nl":"Startwagen"},
+    "create.car_default": {"en":"Default (Peugeot 206)","fr":"Défaut (Peugeot 206)","es":"Por defecto (Peugeot 206)","de":"Standard (Peugeot 206)","pt":"Padrão (Peugeot 206)","ru":"По умолчанию (Peugeot 206)","zh":"默认 (标致 206)","ja":"デフォルト (プジョー 206)","ko":"기본값 (푸조 206)","ar":"الافتراضي (بيجو 206)","it":"Default (Peugeot 206)","tr":"Varsayılan (Peugeot 206)","id":"Default (Peugeot 206)","pl":"Domyślne (Peugeot 206)","nl":"Standaard (Peugeot 206)"},
+    "create.unlock_parts":{"en":"Unlock All Parts","fr":"Déverrouiller toutes les pièces","es":"Desbloquear todas las piezas","de":"Alle Teile freischalten","pt":"Desbloquear peças","ru":"Разблокировать все запчасти","zh":"解锁全部零件","ja":"すべてのパーツを解放","ko":"모든 부품 해제","ar":"فتح جميع الأجزاء","it":"Sblocca tutte le parti","tr":"Tüm Parçaları Kilit Aç","id":"Buka Semua Bagian","pl":"Odblokuj wszystkie części","nl":"Ontgrendel alle onderdelen"},
+    "create.btn":         {"en":"Create & Save","fr":"Créer & Enregistrer","es":"Crear y guardar","de":"Erstellen & Speichern","pt":"Criar e salvar","ru":"Создать и сохранить","zh":"创建并保存","ja":"作成して保存","ko":"만들기 및 저장","ar":"إنشاء وحفظ","it":"Crea e Salva","tr":"Oluştur ve Kaydet","id":"Buat dan Simpan","pl":"Utwórz i zapisz","nl":"Maken en opslaan"},
     # Language selector
     "lang.label":         {"en":"Language","fr":"Langue","es":"Idioma","de":"Sprache","pt":"Idioma","ru":"Язык","zh":"语言","ja":"言語","ko":"언어","ar":"اللغة","it":"Lingua","tr":"Dil","id":"Bahasa","pl":"Język","nl":"Taal"},
     # Toast messages
-    "toast.loaded":       {"en":"Save loaded: {f}","fr":"Fichier chargé : {f}","es":"Guardado cargado: {f}","de":"Spielstand geladen: {f}","pt":"Save carregado: {f}","ru":"Сохранение загружено: {f}","zh":"存档已加载：{f}","ja":"セーブ読込: {f}","ko":"세이브 불러옴: {f}","ar":"تم التحميل: {f}","it":"File caricato: {f}","tr":"Kayıt yüklendi: {f}","id":"Dimuat: {f}","pl":"Wczytano: {f}","nl":"Save geladen: {f}"},
-    "toast.backed_up":    {"en":"Backup saved.","fr":"Backup enregistré.","es":"Copia guardada.","de":"Backup gespeichert.","pt":"Backup salvo.","ru":"Резервная копия сохранена.","zh":"备份已保存。","ja":"バックアップ保存済み。","ko":"백업 저장됨.","ar":"تم حفظ النسخة الاحتياطية.","it":"Backup salvato.","tr":"Yedek kaydedildi.","id":"Cadangan disimpan.","pl":"Kopia zapisana.","nl":"Backup opgeslagen."},
-    "toast.applied":      {"en":"Save written to disk.","fr":"Fichier enregistré.","es":"Guardado escrito.","de":"Spielstand gespeichert.","pt":"Save salvo.","ru":"Файл сохранён.","zh":"存档已写入磁盘。","ja":"保存しました。","ko":"저장 완료.","ar":"تم الحفظ.","it":"File salvato.","tr":"Dosya kaydedildi.","id":"File disimpan.","pl":"Plik zapisany.","nl":"Opgeslagen."},
-    "toast.cloned":       {"en":"Cloned as {n}.","fr":"Cloné en {n}.","es":"Clonado como {n}.","de":"Geklont als {n}.","pt":"Clonado como {n}.","ru":"Клонировано как {n}.","zh":"已克隆为 {n}。","ja":"{n} としてクローン。","ko":"{n}으로 복제됨.","ar":"تم الاستنساخ كـ {n}.","it":"Clonato come {n}.","tr":"{n} olarak klonlandı.","id":"Dikloning sebagai {n}.","pl":"Sklonowano jako {n}.","nl":"Gekloond als {n}."},
-    "toast.created":      {"en":"New save created: {n}.","fr":"Nouveau fichier créé : {n}.","es":"Nuevo guardado: {n}.","de":"Neuer Spielstand: {n}.","pt":"Novo save criado: {n}.","ru":"Новый файл создан: {n}.","zh":"新存档已创建：{n}。","ja":"新しいセーブ作成: {n}。","ko":"새 세이브 생성: {n}.","ar":"تم إنشاء ملف جديد: {n}.","it":"Nuovo file creato: {n}.","tr":"Yeni kayıt oluşturuldu: {n}.","id":"Simpanan baru dibuat: {n}.","pl":"Nowy zapis utworzony: {n}.","nl":"Nieuw save aangemaakt: {n}."},
-    "toast.slot_maxed":   {"en":"Slot {n} performance maxed.","fr":"Emplacement {n} maximisé.","es":"Ranura {n} al máximo.","de":"Slot {n} maximiert.","pt":"Slot {n} no máximo.","ru":"Слот {n} максимизирован.","zh":"车位 {n} 性能已最大化。","ja":"スロット {n} 最大化。","ko":"슬롯 {n} 최대화.","ar":"تم رفع أداء الفتحة {n}.","it":"Slot {n} al massimo.","tr":"Yuva {n} maksimize edildi.","id":"Slot {n} dimaksimalkan.","pl":"Miejsce {n} zmaksymalizowane.","nl":"Slot {n} gemaximaliseerd."},
-    "toast.slot_zeroed":  {"en":"Slot {n} performance zeroed.","fr":"Emplacement {n} remis à zéro.","es":"Ranura {n} a cero.","de":"Slot {n} auf Null.","pt":"Slot {n} zerado.","ru":"Слот {n} обнулён.","zh":"车位 {n} 性能已清零。","ja":"スロット {n} ゼロ化。","ko":"슬롯 {n} 초기화.","ar":"تم تصفير أداء الفتحة {n}.","it":"Slot {n} azzerato.","tr":"Yuva {n} sıfırlandı.","id":"Slot {n} dinolkan.","pl":"Miejsce {n} wyzerowane.","nl":"Slot {n} genulld."},
-    "toast.slot_unlocked":{"en":"Slot {n} unlocked.","fr":"Emplacement {n} déverrouillé.","es":"Ranura {n} desbloqueada.","de":"Slot {n} freigeschaltet.","pt":"Slot {n} desbloqueado.","ru":"Слот {n} разблокирован.","zh":"车位 {n} 已解锁。","ja":"スロット {n} 解放。","ko":"슬롯 {n} 해제.","ar":"تم فتح الفتحة {n}.","it":"Slot {n} sbloccato.","tr":"Yuva {n} açıldı.","id":"Slot {n} dibuka.","pl":"Miejsce {n} odblokowane.","nl":"Slot {n} ontgrendeld."},
-    "toast.money_maxed":  {"en":"Money set to maximum.","fr":"Argent au maximum.","es":"Dinero al máximo.","de":"Geld auf Maximum.","pt":"Dinheiro ao máximo.","ru":"Деньги на максимуме.","zh":"金钱已最大化。","ja":"お金を最大化しました。","ko":"돈 최대화.","ar":"تم تعيين المال إلى الحد الأقصى.","it":"Soldi al massimo.","tr":"Para maksimuma ayarlandı.","id":"Uang dimaksimalkan.","pl":"Pieniądze na maksimum.","nl":"Geld op maximum."},
-    "toast.slots_unlocked":{"en":"All 5 slots unlocked.","fr":"5 emplacements déverrouillés.","es":"5 ranuras desbloqueadas.","de":"5 Slots freigeschaltet.","pt":"5 slots desbloqueados.","ru":"5 слотов разблокировано.","zh":"全部5个车位已解锁。","ja":"全5スロット解放。","ko":"5개 슬롯 해제.","ar":"تم فتح 5 فتحات.","it":"5 slot sbloccati.","tr":"5 yuva açıldı.","id":"5 slot dibuka.","pl":"5 miejsc odblokowanych.","nl":"5 slots ontgrendeld."},
-    "toast.parts_unlocked":{"en":"All parts unlocked.","fr":"Toutes les pièces déverrouillées.","es":"Todas las piezas desbloqueadas.","de":"Alle Teile freigeschaltet.","pt":"Todas as peças desbloqueadas.","ru":"Все детали разблокированы.","zh":"所有零件已解锁。","ja":"全パーツ解放。","ko":"모든 파츠 해제.","ar":"تم فتح جميع الأجزاء.","it":"Tutti i pezzi sbloccati.","tr":"Tüm parçalar açıldı.","id":"Semua suku cadang dibuka.","pl":"Wszystkie części odblokowane.","nl":"Alle onderdelen ontgrendeld."},
-    "toast.no_save":      {"en":"No save loaded.","fr":"Aucun fichier chargé.","es":"Sin guardado cargado.","de":"Kein Spielstand geladen.","pt":"Nenhum save carregado.","ru":"Нет загруженного файла.","zh":"未加载存档。","ja":"セーブが未読み込みです。","ko":"세이브가 없습니다.","ar":"لم يتم تحميل أي حفظ.","it":"Nessun file caricato.","tr":"Kayıt yüklenmedi.","id":"Tidak ada simpanan dimuat.","pl":"Brak wczytanego pliku.","nl":"Geen save geladen."},
-    "toast.bak_saved":    {"en":"Backup file saved.","fr":"Fichier backup enregistré.","es":"Archivo de copia guardado.","de":"Backup-Datei gespeichert.","pt":"Arquivo de backup salvo.","ru":"Файл резервной копии сохранён.","zh":"备份文件已保存。","ja":"バックアップ保存済み。","ko":"백업 파일 저장됨.","ar":"تم حفظ ملف النسخة الاحتياطية.","it":"File backup salvato.","tr":"Yedek dosya kaydedildi.","id":"File cadangan disimpan.","pl":"Plik kopii zapisany.","nl":"Backup bestand opgeslagen."},
+    "toast.loaded":       {"en":"Save loaded: {f}","fr":"Fichier chargé : {f}","es":"Guardado cargado: {f}","de":"Spielstand geladen: {f}","pt":"Save carregado: {f}","ru":"Сохранение загружено: {f}","zh":"存档已加载: {f}","ja":"セーブを読み込みました: {f}","ko":"세이브 로드됨: {f}","ar":"تم تحميل الحفظ: {f}","it":"File caricato: {f}","tr":"Dosya yüklendi: {f}","id":"File dimuat: {f}","pl":"Plik załadowany: {f}","nl":"Bestand geladen: {f}"},
+    "toast.backed_up":    {"en":"Backup saved.","fr":"Backup enregistré.","es":"Copia guardada.","de":"Backup gespeichert.","pt":"Backup salvo.","ru":"Резервная копия сохранена.","zh":"备份已保存。","ja":"バックアップが保存されました。","ko":"백업 저장됨.","ar":"تم حفظ النسخة الاحتياطية.","it":"Backup salvato.","tr":"Yedekleme kaydedildi.","id":"Cadangan disimpan.","pl":"Kopia zapasowa zapisana.","nl":"Back-up opgeslagen."},
+    "toast.applied":      {"en":"Save written to disk.","fr":"Fichier enregistré.","es":"Guardado escrito.","de":"Spielstand gespeichert.","pt":"Save salvo.","ru":"Файл сохранён.","zh":"存档已写入磁盘。","ja":"セーブがディスクに書き込まれました。","ko":"세이브가 디스크에 기록됨.","ar":"تم كتابة الحفظ على القرص.","it":"File salvato su disco.","tr":"Dosya diske yazıldı.","id":"File ditulis ke disk.","pl":"Plik zapisany na dysku.","nl":"Bestand naar schijf geschreven."},
+    "toast.cloned":       {"en":"Cloned as {n}.","fr":"Cloné en {n}.","es":"Clonado como {n}.","de":"Geklont als {n}.","pt":"Clonado como {n}.","ru":"Клонировано как {n}.","zh":"克隆为 {n}。","ja":"{n} としてクローンされました。","ko":"{n}으로 복제됨.","ar":"تم استنساخه كـ {n}.","it":"Clonato come {n}.","tr":"{n} olarak klonlandı.","id":"Diklona sebagai {n}.","pl":"Sklonowane jako {n}.","nl":"Gekloond als {n}."},
+    "toast.created":      {"en":"New save created: {n}.","fr":"Nouveau fichier créé : {n}.","es":"Nuevo guardado: {n}.","de":"Neuer Spielstand: {n}.","pt":"Novo save criado: {n}.","ru":"Новое сохранение создано: {n}.","zh":"新存档已创建: {n}。","ja":"新しいセーブが作成されました: {n}。","ko":"새 세이브 생성됨: {n}.","ar":"تم إنشاء حفظ جديد: {n}.","it":"Nuovo file creato: {n}.","tr":"Yeni dosya oluşturuldu: {n}.","id":"File baru dibuat: {n}.","pl":"Nowy plik utworzony: {n}.","nl":"Nieuw bestand gemaakt: {n}."},
+    "toast.slot_maxed":   {"en":"Slot {n} performance maxed.","fr":"Emplacement {n} maximisé.","es":"Ranura {n} al máximo.","de":"Slot {n} maximiert.","pt":"Slot {n} no máximo.","ru":"Слот {n} максимизирован.","zh":"第 {n} 个槽位性能已最大化。","ja":"スロット {n} のパフォーマンスが最大化されました。","ko":"슬롯 {n} 성능 최대화됨.","ar":"تم تعظيم الفتحة {n}.","it":"Slot {n} massimizzato.","tr":"Slot {n} maksimize edildi.","id":"Slot {n} dimaksimalkan.","pl":"Slot {n} zmaksymalizowany.","nl":"Slot {n} gemaximaliseerd."},
+    "toast.slot_zeroed":  {"en":"Slot {n} performance zeroed.","fr":"Emplacement {n} remis à zéro.","es":"Ranura {n} a cero.","de":"Slot {n} auf Null.","pt":"Slot {n} zerado.","ru":"Слот {n} обнулен.","zh":"第 {n} 个槽位性能已重置为零。","ja":"スロット {n} のパフォーマンスがリセットされました。","ko":"슬롯 {n} 성능 초기화됨.","ar":"تم إعادة تعيين الفتحة {n}.","it":"Slot {n} azzerato.","tr":"Slot {n} sıfırlandı.","id":"Slot {n} direset ke nol.","pl":"Slot {n} wyzerowany.","nl":"Slot {n} gereset."},
+    "toast.slot_unlocked":{"en":"Slot {n} unlocked.","fr":"Emplacement {n} déverrouillé.","es":"Ranura {n} desbloqueada.","de":"Slot {n} freigeschaltet.","pt":"Slot {n} desbloqueado.","ru":"Слот {n} разблокирован.","zh":"第 {n} 个槽位已解锁。","ja":"スロット {n} がアンロックされました。","ko":"슬롯 {n} 잠금 해제됨.","ar":"تم فتح الفتحة {n}.","it":"Slot {n} sbloccato.","tr":"Slot {n} kilidinden açıldı.","id":"Slot {n} dibuka.","pl":"Slot {n} odblokowany.","nl":"Slot {n} ontgrendeld."},
+    "toast.money_maxed":  {"en":"Money set to maximum.","fr":"Argent au maximum.","es":"Dinero al máximo.","de":"Geld auf Maximum.","pt":"Dinheiro ao máximo.","ru":"Деньги установлены на максимум.","zh":"金钱已设置为最大值。","ja":"お金が最大に設定されました。","ko":"금액이 최대로 설정됨.","ar":"تم تعيين الأموال على الحد الأقصى.","it":"Denaro impostato al massimo.","tr":"Para maksimuma ayarlandı.","id":"Uang diatur ke maksimum.","pl":"Pieniądze ustawione na maksimum.","nl":"Geld ingesteld op maximum."},
+    "toast.slots_unlocked":{"en":"All 5 slots unlocked.","fr":"5 emplacements déverrouillés.","es":"5 ranuras desbloqueadas.","de":"5 Slots freigeschaltet.","pt":"5 slots desbloqueados.","ru":"Все 5 слотов разблокированы.","zh":"所有 5 个槽位已解锁。","ja":"すべての 5 つのスロットがアンロックされました。","ko":"5개 슬롯 모두 잠금 해제됨.","ar":"تم فتح جميع الفتحات الخمس.","it":"Tutti i 5 slot sbloccati.","tr":"5 slotsun kilidinden açılması tamamlandı.","id":"Semua 5 slot dibuka.","pl":"Wszystkie 5 slotów odblokowane.","nl":"Alle 5 slots ontgrendeld."},
+    "toast.parts_unlocked":{"en":"All parts unlocked.","fr":"Toutes les pièces déverrouillées.","es":"Todas las piezas desbloqueadas.","de":"Alle Teile freischaltet.","pt":"Todas as peças desbloqueadas.","ru":"Все запчасти разблокированы.","zh":"所有零件已解锁。","ja":"すべてのパーツがアンロックされました。","ko":"모든 부품 잠금 해제됨.","ar":"تم فتح جميع الأجزاء.","it":"Tutte le parti sbloccate.","tr":"Tüm parçalar kilidinden açıldı.","id":"Semua bagian dibuka.","pl":"Wszystkie części odblokowane.","nl":"Alle onderdelen ontgrendeld."},
+    "toast.no_save":      {"en":"No save loaded.","fr":"Aucun fichier chargé.","es":"Sin guardado cargado.","de":"Kein Spielstand geladen.","pt":"Nenhum save carregado.","ru":"Нет загруженного сохранения.","zh":"未加载存档。","ja":"セーブが読み込まれていません。","ko":"로드된 세이브 없음.","ar":"لا يوجد حفظ محمل.","it":"Nessun file caricato.","tr":"Yüklü dosya yok.","id":"Tidak ada file yang dimuat.","pl":"Brak załadowanego pliku.","nl":"Geen bestand geladen."},
+    "toast.bak_saved":    {"en":"Backup file saved.","fr":"Fichier backup enregistré.","es":"Archivo de copia guardado.","de":"Backup-Datei gespeichert.","pt":"Arquivo de backup salvo.","ru":"Файл резервной копии сохранен.","zh":"备份文件已保存。","ja":"バックアップファイルが保存されました。","ko":"백업 파일 저장됨.","ar":"تم حفظ ملف النسخة الاحتياطية.","it":"File di backup salvato.","tr":"Yedekleme dosyası kaydedildi.","id":"File cadangan disimpan.","pl":"Plik kopii zapasowej zapisany.","nl":"Back-upbestand opgeslagen."},
     # Errors
-    "err.name":           {"en":"Enter a name (1–7 alphanumeric).","fr":"Entrez un nom (1–7 caractères).","es":"Ingrese un nombre (1–7 alfanumérico).","de":"Name eingeben (1–7 alphanumerisch).","pt":"Digite um nome (1–7 alfanumérico).","ru":"Введите имя (1–7 символов).","zh":"请输入名称（1–7位字母数字）。","ja":"名前を入力 (1〜7英数字)。","ko":"이름을 입력하세요 (1~7 영숫자).","ar":"أدخل اسمًا (1–7 أحرف).","it":"Inserisci un nome (1–7 alfanumerico).","tr":"Ad girin (1–7 alfanümerik).","id":"Masukkan nama (1–7 alfanumerik).","pl":"Podaj nazwę (1–7 znaków).","nl":"Voer een naam in (1–7 alfanumeriek)."},
-    "err.money":          {"en":"Money must be 0–2,147,483,647.","fr":"Argent entre 0 et 2 147 483 647.","es":"Dinero entre 0 y 2.147.483.647.","de":"Geld: 0–2.147.483.647.","pt":"Dinheiro: 0–2.147.483.647.","ru":"Деньги: 0–2 147 483 647.","zh":"金钱范围：0–2,147,483,647。","ja":"金額: 0〜2,147,483,647。","ko":"돈: 0~2,147,483,647.","ar":"المال بين 0 و 2,147,483,647.","it":"Denaro: 0–2.147.483.647.","tr":"Para: 0–2.147.483.647.","id":"Uang: 0–2.147.483.647.","pl":"Pieniądze: 0–2 147 483 647.","nl":"Geld: 0–2.147.483.647."},
+    "err.name":           {"en":"Enter a name (1–7 alphanumeric).","fr":"Entrez un nom (1–7 caractères).","es":"Ingrese un nombre (1–7 alfanumérico).","de":"Name eingeben (1–7 alphanumerisch).","pt":"Digite um nome (1–7 alfanumérico).","ru":"Введите имя (1–7 символов).","zh":"输入名称（1–7 个字母数字）。","ja":"名前を入力してください（1～7 文字）。","ko":"이름 입력 (1-7 자, 영숫자).","ar":"أدخل الاسم (1-7 أحرف).","it":"Inserisci un nome (1-7 caratteri).","tr":"Ad girin (1-7 karakter).","id":"Masukkan nama (1-7 karakter).","pl":"Wpisz nazwę (1–7 znaków).","nl":"Voer een naam in (1–7 tekens)."},
+    "err.money":          {"en":"Money must be 0–2,147,483,647.","fr":"Argent entre 0 et 2 147 483 647.","es":"Dinero entre 0 y 2.147.483.647.","de":"Geld: 0–2.147.483.647.","pt":"Dinheiro: 0–2.147.483.647.","ru":"Деньги: 0–2 147 483 647.","zh":"金钱：0–2,147,483,647。","ja":"金額：0–2,147,483,647。","ko":"금액: 0–2,147,483,647.","ar":"المال: 0–2,147,483,647.","it":"Denaro: 0–2.147.483.647.","tr":"Para: 0–2.147.483.647.","id":"Uang: 0–2.147.483.647.","pl":"Pieniądze: 0–2 147 483 647.","nl":"Geld: 0–2.147.483.647."},
 }
 
 
@@ -161,6 +163,41 @@ class I18n:
         for k, v in kwargs.items():
             s = s.replace("{" + k + "}", str(v))
         return s
+
+
+# ─────────────────────────────────────────────────────────────
+# CONFIG PERSISTENCE — language preference
+# ─────────────────────────────────────────────────────────────
+
+class Config:
+    """Manage persistent app config (language selection)."""
+
+    CONFIG_DIR = os.path.join(os.path.expanduser("~"), ".piererra_tools")
+    CONFIG_FILE = os.path.join(CONFIG_DIR, "nfsu2_config.json")
+
+    @staticmethod
+    def load_lang() -> str:
+        """Load saved language, default to 'en' if missing or invalid."""
+        try:
+            if os.path.exists(Config.CONFIG_FILE):
+                with open(Config.CONFIG_FILE, "r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    lang = data.get("language", "en")
+                    return lang if lang in LANGS else "en"
+        except Exception:
+            pass  # Any error → use default
+        return "en"
+
+    @staticmethod
+    def save_lang(lang: str) -> None:
+        """Save language preference to persistent config file."""
+        try:
+            os.makedirs(Config.CONFIG_DIR, exist_ok=True)
+            data = {"language": lang if lang in LANGS else "en"}
+            with open(Config.CONFIG_FILE, "w", encoding="utf-8") as f:
+                json.dump(data, f, ensure_ascii=False, indent=2)
+        except Exception:
+            pass  # Silently fail if we can't write config
 
 
 # ─────────────────────────────────────────────────────────────
@@ -273,7 +310,9 @@ class App:
     def __init__(self, root: tk.Tk):
         self.root    = root
         self.editor  = SaveEditor()
-        self.i18n    = I18n("en")
+        # Load saved language from config, default to "en"
+        saved_lang = Config.load_lang()
+        self.i18n    = I18n(saved_lang)
         self.toast   = Toast(root)
 
         # Track last directory used in dialogs
@@ -285,7 +324,7 @@ class App:
         self._sv_clone_name = tk.StringVar()
         self._sv_new_name   = tk.StringVar()
         self._sv_new_money  = tk.StringVar(value="0")
-        self._sv_lang       = tk.StringVar(value="en")
+        self._sv_lang       = tk.StringVar(value=saved_lang)
         self._sv_car        = tk.StringVar()
         self._bv_backup     = tk.BooleanVar(value=True)
         self._bv_new_parts  = tk.BooleanVar(value=False)
@@ -407,7 +446,7 @@ class App:
             width=18,
             font=Theme.FONT_MONO_SM,
         )
-        lang_cb.set(LANGS["en"])
+        lang_cb.set(LANGS[self.i18n.lang])
         lang_cb.pack(side="left")
         lang_cb.bind("<<ComboboxSelected>>",
                      lambda e: self._on_lang_change(lang_keys, lang_cb))
@@ -801,7 +840,10 @@ class App:
             idx = lang_labels.index(selected_label)
         except ValueError:
             return
-        self.i18n.set(lang_keys[idx])
+        lang_code = lang_keys[idx]
+        self.i18n.set(lang_code)
+        # Save language preference to persistent config
+        Config.save_lang(lang_code)
         # Rebuild UI to reflect new language
         self._rebuild_ui()
 
