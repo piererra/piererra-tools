@@ -45,6 +45,7 @@
   --red:            #FF4040;
   --red-dim:        rgba(255, 64, 64, 0.11);
   --blue:           #4A9EFF;
+  --blue-dim:       rgba(74, 158, 255, 0.13);
   --text-main:      #CDD3E8;
   --text-muted:     #424B68;
   --border:         rgba(24, 30, 48, 0.9);
@@ -546,6 +547,172 @@ code {
   color: var(--text-muted);
 }
 
+/* ── JUNKMAN TABS ───────────────────────────────────────── */
+.mwe-junkman__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mwe-junkman__tab {
+  font-family: var(--font);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-lit);
+  border-radius: var(--radius);
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  transition: border-color var(--ease), color var(--ease), background var(--ease);
+}
+
+.mwe-junkman__tab:hover { border-color: var(--orange); color: var(--orange); }
+
+.mwe-junkman__tab--active {
+  background: var(--orange-dim);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* ── JUNKMAN GRID ───────────────────────────────────────── */
+.mwe-junkman__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+/* ── JUNKMAN TOKEN CARD ─────────────────────────────────── */
+.mwe-junkman__card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--border-lit);
+  border-radius: var(--radius);
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.mwe-junkman__card--performance { border-left-color: var(--orange); }
+.mwe-junkman__card--visual      { border-left-color: var(--blue); }
+.mwe-junkman__card--police      { border-left-color: var(--red); }
+.mwe-junkman__card--unknown     { border-left-color: var(--text-muted); }
+
+.mwe-junkman__card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.mwe-junkman__card-name {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  color: var(--text-main);
+}
+
+.mwe-junkman__card-badge {
+  font-size: 0.56rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mwe-junkman__card-badge--performance { color: var(--orange);     background: var(--orange-dim); }
+.mwe-junkman__card-badge--visual      { color: var(--blue);       background: var(--blue-dim); }
+.mwe-junkman__card-badge--police      { color: var(--red);        background: var(--red-dim); }
+.mwe-junkman__card-badge--unknown     { color: var(--text-muted); background: rgba(66, 75, 104, 0.16); }
+
+.mwe-junkman__card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.mwe-junkman__card-have {
+  font-size: 0.64rem;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+}
+
+.mwe-junkman__card-have strong { color: var(--text-main); }
+
+/* Want toggle — compact pill button, default (locked) state */
+.mwe-junkman__toggle {
+  font-family: var(--font);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-lit);
+  border-radius: var(--radius);
+  padding: 0.35rem 0.7rem;
+  cursor: pointer;
+  transition: background var(--ease), border-color var(--ease), color var(--ease);
+}
+
+.mwe-junkman__toggle:hover { border-color: var(--orange); color: var(--orange); }
+
+.mwe-junkman__toggle--on {
+  background: var(--orange);
+  border-color: var(--orange);
+  color: #000;
+}
+
+/* Want stepper — advanced stacking mode, small numeric input */
+.mwe-junkman__stepper {
+  width: 3.4rem;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.68rem;
+  text-align: center;
+}
+
+/* ── JUNKMAN ACTIONS ────────────────────────────────────── */
+.mwe-junkman__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* ── JUNKMAN CAPACITY FOOTER ────────────────────────────── */
+.mwe-junkman__footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.mwe-junkman__footer-label {
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.mwe-junkman__footer-bar {
+  height: 6px;
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.mwe-junkman__footer-fill {
+  height: 100%;
+  width: 0%;
+  background: var(--orange);
+  border-radius: 99px;
+  transition: width var(--ease);
+}
+
 /* ── BUTTONS ────────────────────────────────────────────── */
 .mwe-btn {
   font-family: var(--font);
@@ -730,4 +897,6 @@ code {
   .mwe-action-row  { flex-direction: column; }
   .mwe-btn--primary,
   .mwe-btn--ghost  { width: 100%; }
+  .mwe-junkman__grid    { grid-template-columns: 1fr; }
+  .mwe-junkman__actions { flex-direction: column; }
 }
