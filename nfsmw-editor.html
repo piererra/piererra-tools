@@ -251,6 +251,43 @@
           </div>
         </section>
 
+        <!-- JUNKMAN TOKENS -->
+        <section class="mwe-section">
+          <div class="mwe-section__head">
+            <h2 class="mwe-section__title">Junkman Tokens</h2>
+            <p class="mwe-section__desc">Edit your Junkman inventory — 59 slots across Performance, Visual, and Police tokens.</p>
+          </div>
+
+          <div class="mwe-junkman__tabs" id="mwe-junkman-tabs">
+            <button class="mwe-junkman__tab mwe-junkman__tab--active" data-category="all">All</button>
+            <button class="mwe-junkman__tab" data-category="performance">Performance</button>
+            <button class="mwe-junkman__tab" data-category="visual">Visual</button>
+            <button class="mwe-junkman__tab" data-category="police">Police</button>
+            <button class="mwe-junkman__tab" data-category="unknown">Unknown</button>
+          </div>
+
+          <div class="mwe-junkman__grid" id="mwe-junkman-grid"></div>
+
+          <div class="mwe-junkman__actions" id="mwe-junkman-actions">
+            <button class="mwe-btn mwe-btn--ghost" id="mwe-junkman-unlock-visible">Unlock All Visible</button>
+            <button class="mwe-btn mwe-btn--ghost" id="mwe-junkman-reset">Reset to Save</button>
+            <button class="mwe-btn mwe-btn--ghost" id="mwe-junkman-clear">Clear All Want</button>
+          </div>
+
+          <label class="mwe-checkbox">
+            <input type="checkbox" id="mwe-junkman-stack-toggle" />
+            <span class="mwe-checkbox__mark"></span>
+            <span class="mwe-checkbox__label">Allow stacking multiples per token (advanced, up to 63)</span>
+          </label>
+
+          <div class="mwe-junkman__footer">
+            <span class="mwe-junkman__footer-label" id="mwe-junkman-slots-label">— / 59 slots used</span>
+            <div class="mwe-junkman__footer-bar">
+              <div class="mwe-junkman__footer-fill" id="mwe-junkman-slots-fill"></div>
+            </div>
+          </div>
+        </section>
+
         <!-- INFRACTIONS -->
         <section class="mwe-section">
           <div class="mwe-section__head">
