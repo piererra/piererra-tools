@@ -525,6 +525,9 @@
       /* Show editor body */
       $('mwe-editor-body').hidden = false;
 
+      /* Reveal the always-reachable save action */
+      if ($('mwe-stickybar')) $('mwe-stickybar').hidden = false;
+
       /* Render dynamic sections */
       renderAll(snapshot);
     };
@@ -694,17 +697,59 @@
     }
   }
 
+  /* ── SECTION TABS (page-level) ────────────────────────── */
+
+  function initSectionTabs() {
+    var tabs = document.querySelectorAll('.mwe-tabs__btn');
+    if (!tabs.length) return;
+
+    tabs.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var target = btn.getAttribute('data-tab');
+
+        var allTabs = document.querySelectorAll('.mwe-tabs__btn');
+        allTabs.forEach(function (t) {
+          var active = t === btn;
+          t.classList.toggle('mwe-tabs__btn--active', active);
+          t.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+
+        var allPanels = document.querySelectorAll('.mwe-tab-panel');
+        allPanels.forEach(function (panel) {
+          var active = panel.getAttribute('data-tab-panel') === target;
+          panel.classList.toggle('mwe-tab-panel--active', active);
+          panel.hidden = !active;
+        });
+
+        /* Scroll the panel into view under the sticky tab bar */
+        var tabsBar = $('mwe-tabs');
+        if (tabsBar) {
+          var offset = tabsBar.getBoundingClientRect().bottom;
+          if (offset < 0 || offset > 120) {
+            tabsBar.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
+  }
+
   /* ── DOWNLOAD BUTTONS ─────────────────────────────────── */
 
   function initDownload() {
-    $('mwe-btn-download').addEventListener('click', function () {
+    function doDownload() {
       if (!ptMWE.buffer) {
         toast('Load a save file first.', 'err');
         return;
       }
       mweDownload(ptMWE.filename);
       toast('Save file downloaded.', 'ok');
-    });
+    }
+
+    $('mwe-btn-download').addEventListener('click', doDownload);
+
+    /* Sticky bottom bar mirrors the main download action */
+    var stickyBtn = $('mwe-stickybar-download');
+    if (stickyBtn) stickyBtn.addEventListener('click', doDownload);
 
     $('mwe-btn-backup').addEventListener('click', function () {
       if (!ptMWE.buffer) {
@@ -734,6 +779,7 @@
 
     initDropzone();
     initProfileFields();
+    initSectionTabs();
     initJunkman();
     initDownload();
     initLangSelect();
