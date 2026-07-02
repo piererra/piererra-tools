@@ -143,7 +143,7 @@ See the [Desktop App](#desktop-app) section for build instructions.
 **Font:** EurostileBold (loaded from jsDelivr CDN — no local font file)  
 **Supported platforms:** PC (v1.3 EN) · PS2
 
-A full-featured save file editor for **Need for Speed Most Wanted 2005**. Edits money, pursuit bounty, case name, infractions, lifetime pursuit stats, single-best pursuit record, per-car records, and pursuit history. Supports both PC and PS2 save formats with automatic MD5 recalculation.
+A full-featured save file editor for **Need for Speed Most Wanted 2005**. Edits money, pursuit bounty, case name, infractions, lifetime pursuit stats, single-best pursuit record, per-car records, pursuit history, and Junkman token inventory (PC only). Supports both PC and PS2 save formats with automatic MD5 recalculation.
 
 <details>
 <summary><strong>Feature list</strong></summary>
@@ -158,6 +158,7 @@ A full-featured save file editor for **Need for Speed Most Wanted 2005**. Edits 
 | **Pursuit Bounty Edit** | Set the lifetime pursuit bounty to any unsigned 32-bit value. |
 | **Case Name Edit** | Edit your in-game case name (max 12 characters). Alphanumeric, spaces, dashes, and underscores allowed. |
 | **Infractions** | Edit all 8 lifetime infraction types (Uint16 each): Speeding, Excessive Speeding, Reckless Driving, Ramming a Police Vehicle, Hit and Run, Damage to Property, Resisting Arrest, Evading Police. |
+| **Junkman Tokens** *(PC only)* | Edit your 59-slot Junkman inventory across 22 known token IDs (Performance, Visual, Police, Unknown categories). Category tabs, per-token stepper cards, **Unlock All Visible**, **Reset to Save**, **Clear All Want**, and an optional advanced stacking mode (up to 63 per token). A live slots-used bar tracks capacity. Slot IDs outside the known catalog are preserved untouched. |
 | **Lifetime Pursuit Stats** | Edit 8 cumulative pursuit fields: length, police involved, police damaged, police immobilized, spike strips dodged, roadblocks dodged, helicopters deployed, cost to state. |
 | **Single Best Pursuit** | Edit 10 single-pursuit record fields — same as lifetime plus infractions recorded and bounty achieved. |
 | **Per-Car Records** | Each active car slot (up to 6) shows a bounty field and all 8 infraction types for that car. Empty slots (first byte = `0xFF`) are skipped. |
@@ -175,7 +176,7 @@ A full-featured save file editor for **Need for Speed Most Wanted 2005**. Edits 
 2. Select your platform — **PC** or **PS2** — using the toggle buttons.
 3. Drop your save file onto the dropzone or click to browse.
 4. The info bar will show name, money, bounty, platform, size, and hash.
-5. Edit any fields across the Profile, Infractions, Pursuit Stats, Per-Car Records, or Pursuit Records sections.
+5. Edit any fields across the Profile, Junkman Tokens *(PC only)*, Infractions, Pursuit Stats, Per-Car Records, or Pursuit Records sections.
 6. Each field applies on blur — changes are written immediately to the in-memory buffer and the MD5 is recalculated.
 7. Click **Apply All & Download** to save the modified file.
 
@@ -229,6 +230,37 @@ Depends on your memory card manager. The file is named `NFSMW-SAVE` or similar d
 | `+0x18` | Infractions (×8) | `uint16 LE` × 8 |
 
 Slot is skipped if the first byte of the car ID equals `0xFF`.
+
+**Junkman token block (PC only)**
+
+| Field | Value |
+|---|---|
+| Base offset | `0x5769` (saved-data-start `0x34` + `0x5735`) |
+| Slot stride | `0x0C` (12 bytes) |
+| Slot count | 59 |
+| Stacking clamp | 63 per token (advanced/optional; UI defaults to a 0/1 toggle) |
+
+Not yet reverse-engineered on PS2 — Junkman editing is disabled for PS2 saves (`supported: false`).
+
+**Junkman slot struct (12 bytes each)**
+
+| Relative offset | Field | Type | Notes |
+|---|---|---|---|
+| `+0x00` | Type ID | `uint8` | `0` = empty slot |
+| `+0x01`–`0x07` | Padding | `uint8[7]` | Always `0` |
+| `+0x08` | Count flag | `uint8` | `1` = filled, standard slots always hold exactly 1 |
+| `+0x09`–`0x0B` | Padding | `uint8[3]` | Always `0` |
+
+**Junkman token catalog (22 known IDs)**
+
+| Category | IDs |
+|---|---|
+| Performance | 1 Brakes · 2 Engine · 3 NOS · 4 Turbo · 5 Suspension · 6 Tires · 7 Transmission |
+| Visual | 8 Body · 9 Hood · 10 Spoiler · 11 Rims · 12 Roof · 13 Gauge · 14 Vinyl · 15 Decal · 16 Paint |
+| Police | 17 Out of Jail · 18 Money Marker · 19 PinkSlip Marker · 20 Impound Strike Slot Add · 21 Impound Release |
+| Unknown | 22 Unknown ID 22 |
+
+Slot IDs outside 1–22 are counted as "unknown" and left untouched by every write operation — only IDs explicitly passed to `mweApplyJunkmanCounts()` are changed, so unreverse-engineered slots always survive edits.
 
 **Pursuit record struct (56 bytes each)**
 
@@ -728,6 +760,7 @@ Prefix convention: `ptSDE-` (NFSU2), `ptMWE-` (NFSMW), `ptXXX-` (future tools).
 - [x] Tool 01 — NFSU2 Save Editor (web: create, load, edit, clone, cheat)
 - [x] Tool 01 — NFSU2 Save Editor (desktop: Python + tkinter, `.exe` via PyInstaller)
 - [x] Tool 02 — NFSMW Save Editor (web: load, edit money/bounty/infractions/pursuit stats/per-car/per-pursuit, PC + PS2, MD5 rehash)
+- [x] Tool 02 — Junkman Tokens editor (PC only, 59 slots, 22 known IDs, category tabs, stacking mode)
 - [x] Language selector widget (75+ languages, grouped by region, localStorage persistence)
 - [x] Full web i18n — `pt-i18n.js` with 30 languages, 85 keys
 - [x] All toast & UI strings translated in `ptSDE-ui.js`
@@ -736,7 +769,7 @@ Prefix convention: `ptSDE-` (NFSU2), `ptMWE-` (NFSMW), `ptXXX-` (future tools).
 - [x] Persist desktop language selection between sessions
 - [ ] Tool 02 — NFSMW desktop app (Python + tkinter)
 - [ ] Tool 03 — TBD
-- [ ] i18n wiring for NFSMW dynamic fields (per-car / per-pursuit section labels)
+- [ ] i18n wiring for NFSMW dynamic fields (per-car / per-pursuit section labels, Junkman token names)
 - [ ] Expand full translation sets to 50+ languages
 - [ ] Light mode toggle (optional)
 - [ ] Keyboard navigation improvements
