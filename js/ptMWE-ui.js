@@ -338,6 +338,138 @@
     });
   }
 
+  /* ── RENDER — JUNKMAN TOKENS ───────────────────────────── */
+
+  var JUNKMAN_CATEGORY_LABELS = {
+    performance: 'Performance',
+    visual:      'Visual',
+    police:      'Police',
+    unknown:     'Unknown',
+  };
+
+  var _junkmanCategory = 'all';
+  var _junkmanStacking = false;
+
+  function updateJunkmanFooter(jm) {
+    var label = $('mwe-junkman-slots-label');
+    var fill  = $('mwe-junkman-slots-fill');
+    if (!label || !fill) return;
+
+    if (!jm || !jm.supported) {
+      label.textContent = 'PC saves only';
+      fill.style.width  = '0%';
+      return;
+    }
+
+    label.textContent = jm.usedSlots + ' / ' + MWE_JUNKMAN_SLOT_COUNT + ' slots used';
+    fill.style.width   = Math.round((jm.usedSlots / MWE_JUNKMAN_SLOT_COUNT) * 100) + '%';
+  }
+
+  /* Applies a single token's want value and re-renders the section. */
+  function applyJunkmanWant(tokenId, value) {
+    if (!ptMWE.buffer) return;
+    var result = mweSetJunkmanWant(tokenId, value);
+    if (!result.ok) {
+      toast(result.error, 'err');
+      return;
+    }
+    refreshHash();
+    renderJunkman(mweSnapshot());
+  }
+
+  /* Default mode: compact Locked/Unlocked toggle button.
+     Stacking mode: numeric stepper up to MWE_JUNKMAN_CLAMP_MAX. */
+  function buildJunkmanWantControl(token, haveCount) {
+    if (_junkmanStacking) {
+      var inp = document.createElement('input');
+      inp.type      = 'number';
+      inp.className = 'mwe-input mwe-junkman__stepper';
+      inp.min       = '0';
+      inp.max       = String(MWE_JUNKMAN_CLAMP_MAX);
+      inp.value     = haveCount;
+
+      inp.addEventListener('change', function () {
+        var v = parseInt(inp.value, 10);
+        if (isNaN(v) || v < 0)         v = 0;
+        if (v > MWE_JUNKMAN_CLAMP_MAX) v = MWE_JUNKMAN_CLAMP_MAX;
+        inp.value = v;
+        applyJunkmanWant(token.id, v);
+      });
+
+      return inp;
+    }
+
+    var btn = document.createElement('button');
+    btn.type        = 'button';
+    btn.className   = 'mwe-junkman__toggle' + (haveCount > 0 ? ' mwe-junkman__toggle--on' : '');
+    btn.textContent = haveCount > 0 ? 'Unlocked' : 'Locked';
+
+    btn.addEventListener('click', function () {
+      applyJunkmanWant(token.id, haveCount > 0 ? 0 : 1);
+    });
+
+    return btn;
+  }
+
+  function buildJunkmanCard(token, haveCount) {
+    var card = document.createElement('div');
+    card.className = 'mwe-junkman__card mwe-junkman__card--' + token.category;
+
+    var head = document.createElement('div');
+    head.className = 'mwe-junkman__card-head';
+
+    var name = document.createElement('span');
+    name.className   = 'mwe-junkman__card-name';
+    name.textContent = token.name;
+
+    var badge = document.createElement('span');
+    badge.className   = 'mwe-junkman__card-badge mwe-junkman__card-badge--' + token.category;
+    badge.textContent = JUNKMAN_CATEGORY_LABELS[token.category];
+
+    head.appendChild(name);
+    head.appendChild(badge);
+    card.appendChild(head);
+
+    var body = document.createElement('div');
+    body.className = 'mwe-junkman__card-body';
+
+    var have = document.createElement('span');
+    have.className = 'mwe-junkman__card-have';
+    have.appendChild(document.createTextNode('Have '));
+    var strong = document.createElement('strong');
+    strong.textContent = String(haveCount);
+    have.appendChild(strong);
+
+    body.appendChild(have);
+    body.appendChild(buildJunkmanWantControl(token, haveCount));
+    card.appendChild(body);
+
+    return card;
+  }
+
+  function renderJunkman(snapshot) {
+    var grid = $('mwe-junkman-grid');
+    if (!grid) return;
+    grid.innerHTML = '';
+
+    var jm = snapshot.junkman;
+    updateJunkmanFooter(jm);
+
+    if (!jm || !jm.supported) {
+      var msg = document.createElement('p');
+      msg.className   = 'mwe-section__desc';
+      msg.textContent = 'Junkman token editing is available for PC saves only.';
+      grid.appendChild(msg);
+      return;
+    }
+
+    MWE_JUNKMAN_CATALOG.filter(function (t) {
+      return _junkmanCategory === 'all' || t.category === _junkmanCategory;
+    }).forEach(function (token) {
+      grid.appendChild(buildJunkmanCard(token, jm.counts[token.id]));
+    });
+  }
+
   /* ── RENDER — ALL SECTIONS ────────────────────────────── */
 
   function renderAll(snapshot) {
@@ -346,6 +478,7 @@
     renderSingleBest(snapshot);
     renderCars(snapshot);
     renderPursuits(snapshot);
+    renderJunkman(snapshot);
   }
 
   /* ── POPULATE PROFILE FIELDS ──────────────────────────── */
@@ -483,6 +616,84 @@
     });
   }
 
+  /* ── JUNKMAN TOKENS — TABS / ACTIONS / STACK TOGGLE ───── */
+
+  function initJunkman() {
+    /* Category tabs */
+    var tabs = document.querySelectorAll('.mwe-junkman__tab');
+    for (var i = 0; i < tabs.length; i++) {
+      tabs[i].addEventListener('click', function (e) {
+        var btn = e.currentTarget;
+        _junkmanCategory = btn.getAttribute('data-category');
+
+        var all = document.querySelectorAll('.mwe-junkman__tab');
+        for (var j = 0; j < all.length; j++) all[j].classList.remove('mwe-junkman__tab--active');
+        btn.classList.add('mwe-junkman__tab--active');
+
+        if (ptMWE.buffer) renderJunkman(mweSnapshot());
+      });
+    }
+
+    /* Advanced stacking toggle */
+    var stackCb = $('mwe-junkman-stack-toggle');
+    if (stackCb) {
+      stackCb.addEventListener('change', function () {
+        _junkmanStacking = stackCb.checked;
+        if (ptMWE.buffer) renderJunkman(mweSnapshot());
+      });
+    }
+
+    /* Unlock All Visible — sets every token in the active tab to 1 */
+    var unlockBtn = $('mwe-junkman-unlock-visible');
+    if (unlockBtn) {
+      unlockBtn.addEventListener('click', function () {
+        if (!ptMWE.buffer) { toast('Load a save file first.', 'err'); return; }
+
+        var desired = {};
+        MWE_JUNKMAN_CATALOG.filter(function (t) {
+          return _junkmanCategory === 'all' || t.category === _junkmanCategory;
+        }).forEach(function (t) { desired[t.id] = 1; });
+
+        var result = mweApplyJunkmanCounts(desired);
+        if (!result.ok) { toast(result.error, 'err'); return; }
+        refreshHash();
+        renderJunkman(mweSnapshot());
+        toast('Unlocked visible tokens.', 'ok');
+      });
+    }
+
+    /* Reset to Save — restores the counts captured at load time */
+    var resetBtn = $('mwe-junkman-reset');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', function () {
+        if (!ptMWE.buffer) { toast('Load a save file first.', 'err'); return; }
+
+        var result = mweApplyJunkmanCounts(ptMWE.junkmanOriginal || {});
+        if (!result.ok) { toast(result.error, 'err'); return; }
+        refreshHash();
+        renderJunkman(mweSnapshot());
+        toast('Junkman tokens reset to save.', 'ok');
+      });
+    }
+
+    /* Clear All Want — sets every known token to 0 (unknown slots untouched) */
+    var clearBtn = $('mwe-junkman-clear');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function () {
+        if (!ptMWE.buffer) { toast('Load a save file first.', 'err'); return; }
+
+        var desired = {};
+        MWE_JUNKMAN_CATALOG.forEach(function (t) { desired[t.id] = 0; });
+
+        var result = mweApplyJunkmanCounts(desired);
+        if (!result.ok) { toast(result.error, 'err'); return; }
+        refreshHash();
+        renderJunkman(mweSnapshot());
+        toast('All Junkman wants cleared.', 'ok');
+      });
+    }
+  }
+
   /* ── DOWNLOAD BUTTONS ─────────────────────────────────── */
 
   function initDownload() {
@@ -523,6 +734,7 @@
 
     initDropzone();
     initProfileFields();
+    initJunkman();
     initDownload();
     initLangSelect();
   });
