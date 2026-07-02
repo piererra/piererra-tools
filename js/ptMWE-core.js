@@ -166,6 +166,12 @@ const MWE_MAX_PURSUITS        = 5;
 /* Case name max length (bytes, null-terminated within this range) */
 const MWE_CASE_NAME_MAX = 12;
 
+/* Junkman token slot block (PC only — not yet reverse-engineered for PS2) */
+const MWE_JUNKMAN_BASE_PC     = 0x5769;  /* saved-data-start (0x34) + 0x5735 */
+const MWE_JUNKMAN_SLOT_STRIDE = 0x0C;    /* 12 bytes per slot */
+const MWE_JUNKMAN_SLOT_COUNT  = 59;
+const MWE_JUNKMAN_CLAMP_MAX   = 63;      /* hard ceiling; UI defaults to a 0/1 toggle */
+
 
 /* ── PLATFORM MAP ───────────────────────────────────────────
    Helper that boxes a PC value and an optional PS2 value
@@ -196,6 +202,9 @@ const ptMWE = {
   /* Per-car and per-pursuit parsed data arrays */
   cars:     [],
   pursuits: [],
+
+  /* Junkman counts as read at load time (PC only) — powers "Reset to Save" */
+  junkmanOriginal: null,
 };
 
 
@@ -326,6 +335,160 @@ function mweOff(pair) {
 }
 
 
+/* ── JUNKMAN TOKEN CATALOG ───────────────────────────────────
+   22 known token IDs. One filled slot of a given ID = one
+   unit of that token (slot-based inventory, not a counter).
+─────────────────────────────────────────────────────────── */
+const MWE_JUNKMAN_CATALOG = [
+  { id: 1,  name: 'Brakes',                  category: 'performance' },
+  { id: 2,  name: 'Engine',                  category: 'performance' },
+  { id: 3,  name: 'NOS',                     category: 'performance' },
+  { id: 4,  name: 'Turbo',                   category: 'performance' },
+  { id: 5,  name: 'Suspension',              category: 'performance' },
+  { id: 6,  name: 'Tires',                   category: 'performance' },
+  { id: 7,  name: 'Transmission',            category: 'performance' },
+  { id: 8,  name: 'Body',                    category: 'visual' },
+  { id: 9,  name: 'Hood',                    category: 'visual' },
+  { id: 10, name: 'Spoiler',                 category: 'visual' },
+  { id: 11, name: 'Rims',                    category: 'visual' },
+  { id: 12, name: 'Roof',                    category: 'visual' },
+  { id: 13, name: 'Gauge',                   category: 'visual' },
+  { id: 14, name: 'Vinyl',                   category: 'visual' },
+  { id: 15, name: 'Decal',                   category: 'visual' },
+  { id: 16, name: 'Paint',                   category: 'visual' },
+  { id: 17, name: 'Out of Jail',             category: 'police' },
+  { id: 18, name: 'Money Marker',            category: 'police' },
+  { id: 19, name: 'PinkSlip Marker',         category: 'police' },
+  { id: 20, name: 'Impound Strike Slot Add', category: 'police' },
+  { id: 21, name: 'Impound Release',         category: 'police' },
+  { id: 22, name: 'Unknown ID 22',           category: 'unknown' },
+];
+
+
+/* ── JUNKMAN: LOW-LEVEL SLOT ACCESS ─────────────────────────
+   PC-only. MWE_JUNKMAN_SLOT_COUNT fixed-size slots starting
+   at MWE_JUNKMAN_BASE_PC.
+     Filled slot:  [type_id, 00 x7, 01, 00 x3]
+     Empty slot:   [00 x12]
+─────────────────────────────────────────────────────────── */
+function mweJunkmanSlotAbs(index) {
+  return MWE_JUNKMAN_BASE_PC + index * MWE_JUNKMAN_SLOT_STRIDE;
+}
+
+function mweJunkmanReadSlot(index) {
+  const abs = mweJunkmanSlotAbs(index);
+  return {
+    typeId: mweGetU8(abs),
+    count:  mweGetU8(abs + 0x08),
+  };
+}
+
+function mweJunkmanWriteSlot(index, typeId) {
+  const abs = mweJunkmanSlotAbs(index);
+  for (let i = 0; i < MWE_JUNKMAN_SLOT_STRIDE; i++) mweSetU8(abs + i, 0);
+  mweSetU8(abs, typeId & 0xFF);
+  mweSetU8(abs + 0x08, 1);
+}
+
+function mweJunkmanClearSlot(index) {
+  const abs = mweJunkmanSlotAbs(index);
+  for (let i = 0; i < MWE_JUNKMAN_SLOT_STRIDE; i++) mweSetU8(abs + i, 0);
+}
+
+
+/* ── JUNKMAN: READ CURRENT COUNTS ───────────────────────────
+   Tabulates every slot. Returns per-token counts for the 22
+   known IDs plus capacity info. `supported` is false on PS2
+   saves, since this block hasn't been reverse-engineered there.
+─────────────────────────────────────────────────────────── */
+function mweGetJunkmanCounts() {
+  const counts = {};
+  for (const t of MWE_JUNKMAN_CATALOG) counts[t.id] = 0;
+
+  if (ptMWE.platform !== 'pc') {
+    return { counts, usedSlots: 0, freeSlots: 0, unknownSlots: 0, supported: false };
+  }
+
+  let usedSlots    = 0;
+  let unknownSlots = 0;
+
+  for (let i = 0; i < MWE_JUNKMAN_SLOT_COUNT; i++) {
+    const slot = mweJunkmanReadSlot(i);
+    if (slot.typeId === 0 || slot.count !== 1) continue; /* empty / non-standard slot */
+    usedSlots++;
+    if (Object.prototype.hasOwnProperty.call(counts, slot.typeId)) {
+      counts[slot.typeId]++;
+    } else {
+      unknownSlots++; /* slot holds an ID outside 1..22 — always preserved as-is */
+    }
+  }
+
+  return {
+    counts,
+    usedSlots,
+    freeSlots: MWE_JUNKMAN_SLOT_COUNT - usedSlots,
+    unknownSlots,
+    supported: true,
+  };
+}
+
+
+/* ── JUNKMAN: APPLY DESIRED COUNTS ──────────────────────────
+   desired = { typeId: count, ... }. Only the IDs passed in are
+   changed — every other ID (known or unknown) keeps its current
+   save value, so anything not yet reverse-engineered is left
+   alone automatically. Clamps each value to 0..MWE_JUNKMAN_CLAMP_MAX
+   and refuses if the total would overflow the available slots.
+   Clears and rewrites the whole block on every call, sorted by
+   ascending type ID, so slot order stays deterministic.
+   Returns { ok, error? }.
+─────────────────────────────────────────────────────────── */
+function mweApplyJunkmanCounts(desired) {
+  if (ptMWE.platform !== 'pc') {
+    return { ok: false, error: 'Junkman editing is PC-only for now.' };
+  }
+
+  /* Read current raw slot contents so unspecified IDs survive untouched */
+  const haveFull = {};
+  for (let i = 0; i < MWE_JUNKMAN_SLOT_COUNT; i++) {
+    const slot = mweJunkmanReadSlot(i);
+    if (slot.typeId === 0 || slot.count !== 1) continue;
+    haveFull[slot.typeId] = (haveFull[slot.typeId] || 0) + 1;
+  }
+
+  const wantFull = Object.assign({}, haveFull);
+  for (const key of Object.keys(desired)) wantFull[key] = desired[key];
+  for (const key of Object.keys(wantFull)) {
+    wantFull[key] = Math.max(0, Math.min(wantFull[key], MWE_JUNKMAN_CLAMP_MAX));
+  }
+
+  const needed = Object.values(wantFull).reduce((sum, v) => sum + (v > 0 ? v : 0), 0);
+  if (needed > MWE_JUNKMAN_SLOT_COUNT) {
+    return { ok: false, error: `Need ${needed} slots, only ${MWE_JUNKMAN_SLOT_COUNT} available.` };
+  }
+
+  for (let i = 0; i < MWE_JUNKMAN_SLOT_COUNT; i++) mweJunkmanClearSlot(i);
+
+  let idx = 0;
+  const ids = Object.keys(wantFull).map(Number).sort((a, b) => a - b);
+  for (const tid of ids) {
+    const cnt = wantFull[tid];
+    for (let n = 0; n < cnt; n++) {
+      mweJunkmanWriteSlot(idx, tid);
+      idx++;
+    }
+  }
+
+  mweRehash();
+  return { ok: true };
+}
+
+/* Convenience single-token setter, mirrors mweSetMoney() etc. */
+function mweSetJunkmanWant(typeId, count) {
+  return mweApplyJunkmanCounts({ [typeId]: count });
+}
+
+
 /* ── FILE LOAD ──────────────────────────────────────────────
    Called by ptMWE-ui.js when a file is selected.
    Returns a parsed snapshot object for the UI to render,
@@ -354,6 +517,9 @@ function mweLoadFile(arrayBuffer, platform, filename) {
 
   /* Parse per-pursuit records */
   for (let i = 0; i < MWE_MAX_PURSUITS; i++) mweParsePursuitSlot(i);
+
+  /* Snapshot original Junkman counts (PC only) so the UI can offer "Reset to Save" */
+  ptMWE.junkmanOriginal = mweGetJunkmanCounts().counts;
 
   /* Return display snapshot */
   return { ok: true, snapshot: mweSnapshot() };
@@ -417,6 +583,7 @@ function mweSnapshot() {
     singleBest,
     cars:     ptMWE.cars,
     pursuits: ptMWE.pursuits,
+    junkman:  mweGetJunkmanCounts(),
   };
 }
 
