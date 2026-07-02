@@ -223,7 +223,20 @@
       ====================================================== -->
       <div id="mwe-editor-body" hidden>
 
+        <!-- ====================================================
+             SECTION TABS
+        ==================================================== -->
+        <div class="mwe-tabs" id="mwe-tabs" role="tablist" aria-label="Editor sections">
+          <button class="mwe-tabs__btn mwe-tabs__btn--active" data-tab="profile" role="tab" aria-selected="true">Profile</button>
+          <button class="mwe-tabs__btn" data-tab="tokens" role="tab" aria-selected="false">Tokens</button>
+          <button class="mwe-tabs__btn" data-tab="infractions" role="tab" aria-selected="false">Infractions</button>
+          <button class="mwe-tabs__btn" data-tab="pursuit" role="tab" aria-selected="false">Pursuit</button>
+          <button class="mwe-tabs__btn" data-tab="cars" role="tab" aria-selected="false">Cars</button>
+          <button class="mwe-tabs__btn" data-tab="records" role="tab" aria-selected="false">Records</button>
+        </div>
+
         <!-- PROFILE -->
+        <div class="mwe-tab-panel mwe-tab-panel--active" data-tab-panel="profile">
         <section class="mwe-section">
           <h2 class="mwe-section__title">Profile</h2>
           <div class="mwe-row">
@@ -250,8 +263,11 @@
             </div>
           </div>
         </section>
+        </div>
+        <!-- end tab-panel: profile -->
 
         <!-- JUNKMAN TOKENS -->
+        <div class="mwe-tab-panel" data-tab-panel="tokens" hidden>
         <section class="mwe-section">
           <div class="mwe-section__head">
             <h2 class="mwe-section__title">Junkman Tokens</h2>
@@ -287,8 +303,11 @@
             </div>
           </div>
         </section>
+        </div>
+        <!-- end tab-panel: tokens -->
 
         <!-- INFRACTIONS -->
+        <div class="mwe-tab-panel" data-tab-panel="infractions" hidden>
         <section class="mwe-section">
           <div class="mwe-section__head">
             <h2 class="mwe-section__title">Infractions</h2>
@@ -296,8 +315,11 @@
           </div>
           <div class="mwe-grid-2" id="mwe-infractions-grid"></div>
         </section>
+        </div>
+        <!-- end tab-panel: infractions -->
 
         <!-- PURSUIT STATS -->
+        <div class="mwe-tab-panel" data-tab-panel="pursuit" hidden>
         <section class="mwe-section">
           <div class="mwe-section__head">
             <h2 class="mwe-section__title">Pursuit Stats</h2>
@@ -316,8 +338,11 @@
             <div class="mwe-grid-2" id="mwe-singlebest-grid"></div>
           </div>
         </section>
+        </div>
+        <!-- end tab-panel: pursuit -->
 
         <!-- PER-CAR RECORDS -->
+        <div class="mwe-tab-panel" data-tab-panel="cars" hidden>
         <section class="mwe-section">
           <div class="mwe-section__head">
             <h2 class="mwe-section__title">Per-Car Records</h2>
@@ -325,8 +350,11 @@
           </div>
           <div id="mwe-cars-container"></div>
         </section>
+        </div>
+        <!-- end tab-panel: cars -->
 
         <!-- PER-PURSUIT RECORDS -->
+        <div class="mwe-tab-panel" data-tab-panel="records" hidden>
         <section class="mwe-section">
           <div class="mwe-section__head">
             <h2 class="mwe-section__title">Pursuit Records</h2>
@@ -334,6 +362,8 @@
           </div>
           <div id="mwe-pursuits-container"></div>
         </section>
+        </div>
+        <!-- end tab-panel: records -->
 
         <!-- DOWNLOAD -->
         <section class="mwe-section mwe-section--actions mwe-section--last">
@@ -377,6 +407,14 @@
 
   <!-- Toast notification -->
   <div class="mwe-toast" id="mwe-toast" role="status" aria-live="polite"></div>
+
+  <!-- Sticky bottom bar — always-reachable save action once a file is loaded -->
+  <div class="mwe-stickybar" id="mwe-stickybar" hidden>
+    <span class="mwe-stickybar__label" id="mwe-stickybar-label">Ready to save</span>
+    <button class="mwe-btn mwe-btn--primary mwe-btn--sm" id="mwe-stickybar-download">
+      Apply &amp; Download
+    </button>
+  </div>
 
   <!-- three.js r134 + Vanta NET 0.5.24 -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
