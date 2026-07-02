@@ -547,6 +547,61 @@ code {
   color: var(--text-muted);
 }
 
+/* ── SECTION TABS (page-level) ─────────────────────────────
+   Same visual language as Junkman's sub-tabs, but sticky under
+   the nav so it stays reachable while a panel is scrolled.
+──────────────────────────────────────────────────────────── */
+.mwe-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 0.4rem;
+  padding: 0.6rem 0.5rem;
+  margin: 0 -1.25rem 0.25rem;
+  background: var(--bg-panel-solid);
+  border: 1px solid var(--border);
+  border-left: none;
+  border-right: none;
+  scrollbar-width: none;
+}
+.mwe-tabs::-webkit-scrollbar { display: none; }
+
+.mwe-tabs__btn {
+  flex: 0 0 auto;
+  font-family: var(--font);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--border-lit);
+  border-radius: var(--radius);
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  transition: border-color var(--ease), color var(--ease), background var(--ease);
+}
+
+.mwe-tabs__btn:hover { border-color: var(--orange); color: var(--orange); }
+
+.mwe-tabs__btn--active {
+  background: var(--orange-dim);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* ── TAB PANELS ─────────────────────────────────────────── */
+.mwe-tab-panel { display: none; }
+.mwe-tab-panel--active { display: block; }
+
+.mwe-tab-panel .mwe-section {
+  border-radius: var(--radius);
+  border-top: 1px solid var(--border);
+}
+
 /* ── JUNKMAN TABS ───────────────────────────────────────── */
 .mwe-junkman__tabs {
   display: flex;
@@ -773,6 +828,50 @@ code {
   font-size: 0.66rem;
   color: var(--text-muted);
   line-height: 1.75;
+}
+
+/* ── STICKY BOTTOM BAR ──────────────────────────────────────
+   Always-reachable save action once a file is loaded, so users
+   don't have to scroll back to the Download section after
+   editing a panel higher up.
+──────────────────────────────────────────────────────────── */
+.mwe-stickybar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 1.1rem;
+  padding-bottom: calc(0.7rem + env(safe-area-inset-bottom, 0px));
+  background: var(--bg-panel-solid);
+  border-top: 1px solid var(--orange);
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.mwe-stickybar__label {
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mwe-btn--sm {
+  padding: 0.55rem 1rem;
+  font-size: 0.66rem;
+  flex-shrink: 0;
+}
+
+/* Leave room at the bottom of the scroll area so content isn't
+   hidden behind the sticky bar when it's visible. */
+body:has(> .mwe-stickybar:not([hidden])) .mwe-scroll {
+  padding-bottom: 3.75rem;
 }
 
 /* ── TOAST ──────────────────────────────────────────────── */
